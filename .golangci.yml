@@ -2,6 +2,10 @@
 run:
   issues-exit-code: 1 # Default
   tests: true # Default
+  # This part is not yet finished and has too many defines from the Kernel,
+  # we might need them but as some are unused the linter complains.
+  skip-dirs:
+    - "pkg/v4l2"
 
 linters:
   # Disable everything by default so upgrades to not include new "default
