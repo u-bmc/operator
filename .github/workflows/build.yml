@@ -2,7 +2,7 @@ name: Build
 on:
   push:
     branches:
-      - master
+      - main
   pull_request:
     types:
       - opened
@@ -10,7 +10,7 @@ on:
       - synchronize
       - ready_for_review
     branches:
-     - master
+      - main
 permissions:
   contents: read
 jobs:
@@ -28,7 +28,7 @@ jobs:
         uses: dagger/dagger-for-github@v5
         with:
           verb: run
-          args: go run ci/main.go -cmd "go build -o output/ ./cmd/example/main.go"
+          args: go run ci/main.go -cmd "go build -o output/ ./examples/..."
           version: "0.9.3"
       - uses: actions/upload-artifact@v3
         with:

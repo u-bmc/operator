@@ -1,0 +1,11 @@
+version: v1
+name: buf.build/u-bmc/operator
+deps:
+  - buf.build/bufbuild/protovalidate
+  - buf.build/googleapis/googleapis
+breaking:
+  use:
+    - FILE
+lint:
+  use:
+    - DEFAULT

@@ -1,0 +1,46 @@
+syntax = "proto3";
+
+package ipc.v1alpha1;
+
+option go_package = "ipc";
+
+import "buf/validate/validate.proto";
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/struct.proto";
+
+service IPCService {
+  rpc Publish(PublishRequest) returns (PublishResponse);
+  rpc Subscribe(SubscribeRequest) returns (stream SubscribeResponse);
+}
+
+message PublishRequest {
+  string topic = 1 [(buf.validate.field).string.min_len = 4];
+  string publisher_name = 2 [(buf.validate.field).string.min_len = 4];
+  string publisher_id = 3 [(buf.validate.field).string.uuid = true];
+  repeated google.protobuf.Struct data = 4 [(buf.validate.field).repeated.min_items = 1];
+}
+
+enum Status {
+  STATUS_UNSPECIFIED = 0;
+  STATUS_SUCCESS = 1;
+  STATUS_FAILURE = 2;
+}
+
+message PublishResponse {
+  Status status = 1 [(buf.validate.field).enum.defined_only = true];
+}
+
+message SubscribeRequest {
+  string topic = 1 [(buf.validate.field).string.min_len = 4];
+  string subscriber_name = 2 [(buf.validate.field).string.min_len = 4];
+  string subscriber_id = 3 [(buf.validate.field).string.uuid = true];
+}
+
+message SubscribeResponse {
+  google.protobuf.Timestamp timestamp = 1;
+  string topic = 2 [(buf.validate.field).string.min_len = 4];
+  string publisher_name = 3 [(buf.validate.field).string.min_len = 4];
+  string publisher_id = 4 [(buf.validate.field).string.uuid = true];
+  string message_id = 5 [(buf.validate.field).string.uuid = true];
+  repeated google.protobuf.Struct data = 6 [(buf.validate.field).repeated.min_items = 1];
+}
