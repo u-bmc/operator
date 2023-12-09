@@ -53,6 +53,8 @@ github.com/chzyer/test v0.0.0-20180213035817-a1ea475d72b1/go.mod h1:Q3SI9o4m/ZMn
 github.com/client9/misspell v0.3.4/go.mod h1:qj6jICC3Q7zFZvVWo7KLAzC3yx5G7kyvSDkc90ppPyw=
 github.com/cloudflare/roughtime v0.0.0-20230225092523-1211f16878b9 h1:UXsisYW0M+Hl4RXgJ+xBbTxsFPhK5ntKEECSKqkJovk=
 github.com/cloudflare/roughtime v0.0.0-20230225092523-1211f16878b9/go.mod h1:kXNW4logfXrkcZqQVU9UQEF00QL1k4Pevaw+nAY6zL4=
+github.com/cloudflare/roughtime v0.0.0-20231130205103-56090f576343 h1:03DAP5xTl8mra8tFyPYM7NJvnaXEHj9pv+dkRPFDovE=
+github.com/cloudflare/roughtime v0.0.0-20231130205103-56090f576343/go.mod h1:kXNW4logfXrkcZqQVU9UQEF00QL1k4Pevaw+nAY6zL4=
 github.com/coreos/go-systemd v0.0.0-20181012123002-c6f51f82210d/go.mod h1:F5haX7vjVVG0kc13fIWeqUViNPyEJxv/OmvnBo0Yme4=
 github.com/creack/goselect v0.1.2 h1:2DNy14+JPjRBgPzAd1thbQp4BSIihxcBf0IXhQXDRa0=
 github.com/creack/goselect v0.1.2/go.mod h1:a/NhLweNvqIYMuxcMOuWY516Cimucms3DglDzQP3hKY=
