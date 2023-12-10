@@ -101,10 +101,9 @@ func (s *Service) Run() error {
 
 	mux.Handle(grpchealth.NewHandler(grpchealth.NewStaticChecker(ipcv1alpha1connect.IPCServiceName)))
 
-	hs := &http.Server{
-		Addr:              addr,
-		Handler:           h2c.NewHandler(mux, &http2.Server{}),
-		ReadHeaderTimeout: 5 * time.Second,
+	hs := &http.Server{ //nolint:gosec
+		Addr:    addr,
+		Handler: h2c.NewHandler(mux, &http2.Server{}),
 	}
 
 	s.c.log.Info("Starting IPC server", "addr", s.c.addr, "addrType", s.c.addrType)

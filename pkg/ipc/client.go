@@ -40,8 +40,8 @@ func NewClient(t Transport, addr string) (ipcv1alpha1connect.IPCServiceClient, e
 				DialTLS: func(network, addr string, _ *tls.Config) (net.Conn, error) {
 					return net.Dial(network, addr)
 				},
+				ReadIdleTimeout: 10 * time.Second,
 			},
-			Timeout: 10 * time.Second,
 		}
 		baseURL = fmt.Sprintf("%s%s", t, addr)
 	case Unix:
@@ -49,7 +49,6 @@ func NewClient(t Transport, addr string) (ipcv1alpha1connect.IPCServiceClient, e
 		unixtransport.Register(tp)
 		client = &http.Client{
 			Transport: tp,
-			Timeout:   10 * time.Second,
 		}
 		baseURL = fmt.Sprintf("%s%s", t, addr)
 	default:
