@@ -11,7 +11,7 @@ require (
 	dagger.io/dagger v0.9.4
 	github.com/beevik/ntp v1.3.0
 	github.com/beevik/nts v0.1.0
-	github.com/bufbuild/protovalidate-go v0.4.2
+	github.com/bufbuild/protovalidate-go v0.4.3
 	github.com/cloudflare/roughtime v0.0.0-20231130205103-56090f576343
 	github.com/go-logr/logr v1.3.0
 	github.com/go-logr/stdr v1.2.2
