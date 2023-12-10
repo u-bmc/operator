@@ -9,6 +9,7 @@ import (
 
 	"connectrpc.com/connect"
 	"connectrpc.com/grpchealth"
+	"connectrpc.com/grpcreflect"
 	"connectrpc.com/otelconnect"
 	"connectrpc.com/vanguard"
 	"github.com/google/uuid"
@@ -81,6 +82,10 @@ func (s *Service) Run() error {
 	mux := http.NewServeMux()
 	mux.Handle("/", transcoder)
 	mux.Handle(grpchealth.NewHandler(grpchealth.NewStaticChecker(umgmtv1alpha1connect.UmgmtServiceName)))
+
+	reflector := grpcreflect.NewStaticReflector(umgmtv1alpha1connect.UmgmtServiceName)
+	mux.Handle(grpcreflect.NewHandlerV1(reflector))
+	mux.Handle(grpcreflect.NewHandlerV1Alpha(reflector))
 
 	// TODO: Get from registry or config
 	// TODO: Change self signed generate function to behave the same as proper signed generate function
