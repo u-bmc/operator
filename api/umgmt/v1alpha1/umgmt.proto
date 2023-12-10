@@ -17,13 +17,13 @@ service UmgmtService {
 
   rpc GetUserInfo(GetUserInfoRequest) returns (GetUserInfoResponse) {
     option (google.api.http) = {
-      get: "/umgmt/v1alpha1/user/{user_id}"
+      get: "/umgmt/v1alpha1/user/{user_name}"
     };
   }
 
   rpc UpdateUser(UpdateUserRequest) returns (UpdateUserResponse) {
     option (google.api.http) = {
-      post: "/umgmt/v1alpha1/user/{user_id}"
+      post: "/umgmt/v1alpha1/user/{user_name}"
       body: "*"
     };
   }
@@ -36,19 +36,19 @@ service UmgmtService {
 
   rpc GetMachineInfo(GetMachineInfoRequest) returns (GetMachineInfoResponse) {
     option (google.api.http) = {
-      get: "/umgmt/v1alpha1/machine/{machine_id}"
+      get: "/umgmt/v1alpha1/machine/{id}"
     };
   }
 
   rpc GetMachineState(GetMachineStateRequest) returns (GetMachineStateResponse) {
     option (google.api.http) = {
-      get: "/umgmt/v1alpha1/machine/{machine_id}/state"
+      get: "/umgmt/v1alpha1/machine/{id}/state"
     };
   }
 
   rpc ChangeMachineState(ChangeMachineStateRequest) returns (ChangeMachineStateResponse) {
     option (google.api.http) = {
-      post: "/umgmt/v1alpha1/machine/{machine_id}/state"
+      post: "/umgmt/v1alpha1/machine/{id}/state"
       body: "*"
     };
   }
@@ -61,27 +61,27 @@ service UmgmtService {
 
   rpc GetSensorData(GetSensorDataRequest) returns (GetSensorDataResponse) {
     option (google.api.http) = {
-      get: "/umgmt/v1alpha1/sensors/{sensor_id}"
+      get: "/umgmt/v1alpha1/sensors/{id}"
     };
   }
 
   rpc StreamHostConsole(stream StreamHostConsoleRequest) returns (stream StreamHostConsoleResponse) {
     option (google.api.http) = {
-      post: "/umgmt/v1alpha1/machine/{machine_id}/console"
+      post: "/umgmt/v1alpha1/machine/{id}/console"
       body: "*"
     };
   }
 
   rpc ConfigureThermalSetPoints(ConfigureThermalSetPointsRequest) returns (ConfigureThermalSetPointsResponse) {
     option (google.api.http) = {
-      post: "/umgmt/v1alpha1/machine/{machine_id}/thermal/setpoints"
+      post: "/umgmt/v1alpha1/machine/{id}/thermal/setpoints"
       body: "*"
     };
   }
 
   rpc ConfigureThermalFanProfiles(ConfigureThermalFanProfilesRequest) returns (ConfigureThermalFanProfilesResponse) {
     option (google.api.http) = {
-      post: "/umgmt/v1alpha1/machine/{machine_id}/thermal/fanprofiles"
+      post: "/umgmt/v1alpha1/machine/{id}/thermal/fanprofiles"
       body: "*"
     };
   }
@@ -124,7 +124,8 @@ message GetUserInfoResponse {
 }
 
 message UpdateUserRequest {
-  User user = 1;
+  string user_name = 1 [(buf.validate.field).string.min_len = 1];
+  User user = 2;
 }
 
 message UpdateUserResponse {
@@ -231,8 +232,9 @@ message GetSensorDataResponse {
 }
 
 message StreamHostConsoleRequest {
-  bytes data = 1;
-  Status status = 2 [(buf.validate.field).enum.defined_only = true];
+  string id = 1 [(buf.validate.field).string.uuid = true];
+  bytes data = 2;
+  Status status = 3 [(buf.validate.field).enum.defined_only = true];
 }
 
 message StreamHostConsoleResponse {
@@ -241,7 +243,8 @@ message StreamHostConsoleResponse {
 }
 
 message ConfigureThermalSetPointsRequest {
-  int32 cpu_setpoint = 1;
+  string id = 1 [(buf.validate.field).string.uuid = true];
+  int32 cpu_setpoint = 2;
 }
 
 message ConfigureThermalSetPointsResponse {
@@ -257,7 +260,8 @@ enum FanProfile {
 }
 
 message ConfigureThermalFanProfilesRequest {
-  FanProfile fan_profile = 1 [(buf.validate.field).enum.defined_only = true];
+  string id = 1 [(buf.validate.field).string.uuid = true];
+  FanProfile fan_profile = 2 [(buf.validate.field).enum.defined_only = true];
 }
 
 message ConfigureThermalFanProfilesResponse {

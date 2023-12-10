@@ -360,7 +360,12 @@ export class GetUserInfoResponse extends Message<GetUserInfoResponse> {
  */
 export class UpdateUserRequest extends Message<UpdateUserRequest> {
   /**
-   * @generated from field: umgmt.v1alpha1.User user = 1;
+   * @generated from field: string user_name = 1;
+   */
+  userName = "";
+
+  /**
+   * @generated from field: umgmt.v1alpha1.User user = 2;
    */
   user?: User;
 
@@ -372,7 +377,8 @@ export class UpdateUserRequest extends Message<UpdateUserRequest> {
   static readonly runtime: typeof proto3 = proto3;
   static readonly typeName = "umgmt.v1alpha1.UpdateUserRequest";
   static readonly fields: FieldList = proto3.util.newFieldList(() => [
-    { no: 1, name: "user", kind: "message", T: User },
+    { no: 1, name: "user_name", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 2, name: "user", kind: "message", T: User },
   ]);
 
   static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): UpdateUserRequest {
@@ -1207,12 +1213,17 @@ export class GetSensorDataResponse extends Message<GetSensorDataResponse> {
  */
 export class StreamHostConsoleRequest extends Message<StreamHostConsoleRequest> {
   /**
-   * @generated from field: bytes data = 1;
+   * @generated from field: string id = 1;
+   */
+  id = "";
+
+  /**
+   * @generated from field: bytes data = 2;
    */
   data = new Uint8Array(0);
 
   /**
-   * @generated from field: umgmt.v1alpha1.Status status = 2;
+   * @generated from field: umgmt.v1alpha1.Status status = 3;
    */
   status = Status.UNSPECIFIED;
 
@@ -1224,8 +1235,9 @@ export class StreamHostConsoleRequest extends Message<StreamHostConsoleRequest> 
   static readonly runtime: typeof proto3 = proto3;
   static readonly typeName = "umgmt.v1alpha1.StreamHostConsoleRequest";
   static readonly fields: FieldList = proto3.util.newFieldList(() => [
-    { no: 1, name: "data", kind: "scalar", T: 12 /* ScalarType.BYTES */ },
-    { no: 2, name: "status", kind: "enum", T: proto3.getEnumType(Status) },
+    { no: 1, name: "id", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 2, name: "data", kind: "scalar", T: 12 /* ScalarType.BYTES */ },
+    { no: 3, name: "status", kind: "enum", T: proto3.getEnumType(Status) },
   ]);
 
   static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): StreamHostConsoleRequest {
@@ -1293,7 +1305,12 @@ export class StreamHostConsoleResponse extends Message<StreamHostConsoleResponse
  */
 export class ConfigureThermalSetPointsRequest extends Message<ConfigureThermalSetPointsRequest> {
   /**
-   * @generated from field: int32 cpu_setpoint = 1;
+   * @generated from field: string id = 1;
+   */
+  id = "";
+
+  /**
+   * @generated from field: int32 cpu_setpoint = 2;
    */
   cpuSetpoint = 0;
 
@@ -1305,7 +1322,8 @@ export class ConfigureThermalSetPointsRequest extends Message<ConfigureThermalSe
   static readonly runtime: typeof proto3 = proto3;
   static readonly typeName = "umgmt.v1alpha1.ConfigureThermalSetPointsRequest";
   static readonly fields: FieldList = proto3.util.newFieldList(() => [
-    { no: 1, name: "cpu_setpoint", kind: "scalar", T: 5 /* ScalarType.INT32 */ },
+    { no: 1, name: "id", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 2, name: "cpu_setpoint", kind: "scalar", T: 5 /* ScalarType.INT32 */ },
   ]);
 
   static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): ConfigureThermalSetPointsRequest {
@@ -1367,7 +1385,12 @@ export class ConfigureThermalSetPointsResponse extends Message<ConfigureThermalS
  */
 export class ConfigureThermalFanProfilesRequest extends Message<ConfigureThermalFanProfilesRequest> {
   /**
-   * @generated from field: umgmt.v1alpha1.FanProfile fan_profile = 1;
+   * @generated from field: string id = 1;
+   */
+  id = "";
+
+  /**
+   * @generated from field: umgmt.v1alpha1.FanProfile fan_profile = 2;
    */
   fanProfile = FanProfile.UNSPECIFIED;
 
@@ -1379,7 +1402,8 @@ export class ConfigureThermalFanProfilesRequest extends Message<ConfigureThermal
   static readonly runtime: typeof proto3 = proto3;
   static readonly typeName = "umgmt.v1alpha1.ConfigureThermalFanProfilesRequest";
   static readonly fields: FieldList = proto3.util.newFieldList(() => [
-    { no: 1, name: "fan_profile", kind: "enum", T: proto3.getEnumType(FanProfile) },
+    { no: 1, name: "id", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 2, name: "fan_profile", kind: "enum", T: proto3.getEnumType(FanProfile) },
   ]);
 
   static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): ConfigureThermalFanProfilesRequest {
