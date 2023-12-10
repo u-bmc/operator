@@ -45,7 +45,7 @@ func New(name string) (*Cgroup, error) {
 	return &cg, nil
 }
 
-func (cg *Cgroup) Run(args []string) error {
+func (cg *Cgroup) Run() error {
 	if err := unix.Prctl(unix.PR_SET_CHILD_SUBREAPER, 1, 0, 0, 0); err != nil {
 		return fmt.Errorf("cannot set child subreaper: %w", err)
 	}
@@ -68,7 +68,6 @@ func (cg *Cgroup) Run(args []string) error {
 
 	cmd := exec.Cmd{
 		Path: c,
-		Args: args,
 		Env:  os.Environ(),
 
 		ExtraFiles: []*os.File{

@@ -2,10 +2,13 @@
 
 package supervisord
 
-import "github.com/u-bmc/operator/pkg/cgroup"
+import (
+	"github.com/u-bmc/operator/pkg/cgroup"
+	"github.com/u-bmc/operator/service"
+)
 
-func RunProcessConfined(name string, args ...string) error {
-	cg, err := cgroup.New(name)
+func RunServiceConfined(svc service.Service) error {
+	cg, err := cgroup.New(svc.Name())
 	if err != nil {
 		return err
 	}
@@ -13,5 +16,5 @@ func RunProcessConfined(name string, args ...string) error {
 	// need this do be run deferred.
 	defer cg.Teardown() //nolint: errcheck
 
-	return cg.Run(args)
+	return cg.Run()
 }
