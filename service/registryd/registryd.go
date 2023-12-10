@@ -55,13 +55,13 @@ func (s *Service) Name() string {
 }
 
 func (s *Service) Run() error {
-	s.c.log.Info("registryd: starting")
-	s.c.log.Info("registryd: connecting to registry")
+	s.c.log.Info("Starting service", "service", s.c.name, "uuid", s.c.id.String())
+	s.c.log.Info("Connecting to registry", "path", s.c.dbPath)
 	db, err := bolt.Open(s.c.dbPath, 0o600, &bolt.Options{
 		Timeout: 5 * time.Second,
 	})
 	if err != nil {
-		s.c.log.Error(err, "registryd: failed to open registry")
+		s.c.log.Error(err, "Failed to open registry", "path", s.c.dbPath)
 		return err
 	}
 	defer db.Close()
@@ -85,7 +85,7 @@ func (s *Service) Run() error {
 
 		recipient := stream.Msg().PublisherName
 
-		s.c.log.V(10).Info("registryd: received message", "ID", stream.Msg().MessageId, "from", stream.Msg().PublisherName)
+		s.c.log.V(10).Info("Received message", "ID", stream.Msg().MessageId, "from", stream.Msg().PublisherName)
 
 		msg := stream.Msg().GetData()
 		for _, v := range msg {
@@ -98,7 +98,7 @@ func (s *Service) Run() error {
 		}
 	}
 
-	s.c.log.Error(stream.Err(), "registryd: stream ended unexpectedly")
+	s.c.log.Error(stream.Err(), "Stream ended unexpectedly", "service", s.c.name, "uuid", s.c.id.String())
 
 	return fmt.Errorf("unexpected stream end: %w", stream.Err())
 }

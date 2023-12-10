@@ -78,15 +78,19 @@ func (s *Service) Run() error {
 		return err
 	}
 
-	s.c.log.Info("Creating HTTP/3 server", "service", s.c.name, "uuid", s.c.id)
+	s.c.log.Info("Creating HTTP/s multiplexer", "service", s.c.name, "uuid", s.c.id)
 	mux := http.NewServeMux()
 	mux.Handle("/", transcoder)
+
+	s.c.log.Info("Adding gRPC health check to mux", "service", s.c.name, "uuid", s.c.id)
 	mux.Handle(grpchealth.NewHandler(grpchealth.NewStaticChecker(umgmtv1alpha1connect.UmgmtServiceName)))
 
+	s.c.log.Info("Adding gRPC reflector to mux", "service", s.c.name, "uuid", s.c.id)
 	reflector := grpcreflect.NewStaticReflector(umgmtv1alpha1connect.UmgmtServiceName)
 	mux.Handle(grpcreflect.NewHandlerV1(reflector))
 	mux.Handle(grpcreflect.NewHandlerV1Alpha(reflector))
 
+	s.c.log.Info("Generating certificates", "service", s.c.name, "uuid", s.c.id)
 	// TODO: Get from registry or config
 	// TODO: Change self signed generate function to behave the same as proper signed generate function
 	certPem, keyPem, err := cert.GenerateSelfsigned("localhost")
@@ -115,6 +119,7 @@ func (s *Service) Run() error {
 		},
 	}
 
+	s.c.log.Info("Creating HTTP/3 server", "service", s.c.name, "uuid", s.c.id, "addr", "[::]:443")
 	hs := http3.Server{
 		Handler:    mux,
 		QuicConfig: qconf,
