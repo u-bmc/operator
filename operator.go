@@ -13,14 +13,15 @@ import (
 	"github.com/u-bmc/operator/pkg/cgroup"
 	"github.com/u-bmc/operator/service"
 	"github.com/u-bmc/operator/service/apid"
+	"github.com/u-bmc/operator/service/hardwared"
 	"github.com/u-bmc/operator/service/ipcd"
+	"github.com/u-bmc/operator/service/netd"
 	"github.com/u-bmc/operator/service/registryd"
-	"github.com/u-bmc/operator/service/supervisord"
 	"go.opentelemetry.io/otel"
 	"golang.org/x/sys/unix"
 )
 
-func Launch(log logr.Logger, svcs map[string]service.Service) error {
+func Launch(log logr.Logger, supervisor service.Service, svcs map[string]service.Service) error {
 	// If we have not been launched as the 'operator' that means we are being either
 	// called from the cgroup shim or supervisord. In either case, we need to launch
 	// the service that we are being called as. Supervisord will create a symlink
@@ -42,9 +43,8 @@ func Launch(log logr.Logger, svcs map[string]service.Service) error {
 		}
 	}
 
+	// Should this be run here?
 	otel.SetLogger(log)
-
-	s := supervisord.New()
 
 	// Start Supervisor instance guarded by a Recoverer
 	for i := 0; i < 10; i++ {
@@ -55,7 +55,7 @@ func Launch(log logr.Logger, svcs map[string]service.Service) error {
 				}
 			}()
 
-			return s.Run()
+			return supervisor.Run()
 		}()
 
 		log.Error(err, "Fatal issue during supervisord runtime", "retries", i)
@@ -73,19 +73,13 @@ func Launch(log logr.Logger, svcs map[string]service.Service) error {
 	return fmt.Errorf("fatal operator error")
 }
 
-func RunSupervisord() error {
-	return nil
-}
-
-func ExecService() error {
-	return nil
-}
-
 func NewDefaultServiceMap() map[string]service.Service {
 	return service.NewServiceMap(
-		supervisord.New(),
 		ipcd.New(),
 		registryd.New(),
+		netd.New(),
 		apid.New(),
+		hardwared.New(),
+		// TODO: kvmd, telemetryd and updated
 	)
 }
