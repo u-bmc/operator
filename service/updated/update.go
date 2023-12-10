@@ -3,16 +3,14 @@
 package updated
 
 import (
-	"context"
-
 	"github.com/google/uuid"
 	"github.com/u-bmc/operator/pkg/ipc"
 	"github.com/u-bmc/operator/pkg/log"
 )
 
 const (
-	DefaultName = "telemtryd"
-	DefaultUUID = "e163a422-d06e-4c78-9f91-cdc060db530b"
+	DefaultName = "updated"
+	DefaultUUID = "d9bf5d51-8870-40dc-8924-940cb7faf2cb"
 )
 
 func New(opts ...Option) *Service {
@@ -44,6 +42,6 @@ func (s *Service) Name() string {
 	return s.c.name
 }
 
-func (s *Service) Run(ctx context.Context) error {
+func (s *Service) Run() error {
 	return nil
 }

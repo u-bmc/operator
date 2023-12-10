@@ -3,8 +3,6 @@
 package kvmd
 
 import (
-	"context"
-
 	"github.com/google/uuid"
 	"github.com/u-bmc/operator/pkg/ipc"
 	"github.com/u-bmc/operator/pkg/log"
@@ -44,6 +42,6 @@ func (s *Service) Name() string {
 	return s.c.name
 }
 
-func (s *Service) Run(ctx context.Context) error {
+func (s *Service) Run() error {
 	return nil
 }
