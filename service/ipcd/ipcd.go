@@ -86,7 +86,10 @@ func (s *Service) Run() error {
 		addr = s.c.addr
 	}
 
+	s.c.log.Info("Creating message cache", "ttl", 5*time.Second, "maxEntries", 10)
 	ca := cache.NewCache(context.Background(), 5*time.Second, 10)
+
+	s.c.log.Info("Creating HTTP/s multiplexer", "service", s.c.name, "uuid", s.c.id)
 	mux := http.NewServeMux()
 	mux.Handle(ipcv1alpha1connect.NewIPCServiceHandler(
 		&ipcServiceServer{
@@ -99,8 +102,10 @@ func (s *Service) Run() error {
 		)),
 	))
 
+	s.c.log.Info("Adding gRPC health check to mux", "service", s.c.name, "uuid", s.c.id)
 	mux.Handle(grpchealth.NewHandler(grpchealth.NewStaticChecker(ipcv1alpha1connect.IPCServiceName)))
 
+	s.c.log.Info("Creating HTTP/2 server", "service", s.c.name, "uuid", s.c.id)
 	hs := &http.Server{ //nolint:gosec
 		Addr:    addr,
 		Handler: h2c.NewHandler(mux, &http2.Server{}),
