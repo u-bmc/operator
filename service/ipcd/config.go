@@ -3,18 +3,17 @@
 package ipcd
 
 import (
-	"net/http"
-
 	"github.com/go-logr/logr"
 	"github.com/google/uuid"
+	"github.com/u-bmc/operator/pkg/ipc"
 )
 
 type config struct {
-	name      string
-	id        uuid.UUID
-	log       logr.Logger
-	addr      string
-	ipcServer *http.Server
+	name     string
+	id       uuid.UUID
+	log      logr.Logger
+	addr     string
+	addrType ipc.Transport
 }
 
 type Option interface {
@@ -71,22 +70,22 @@ func (o *addrOption) apply(c *config) {
 	c.addr = o.addr
 }
 
-func WithSocket(addr string) Option {
+func WithAddr(addr string) Option {
 	return &addrOption{
 		addr: addr,
 	}
 }
 
-type ipcServerOption struct {
-	ipcServer *http.Server
+type addrTypeOption struct {
+	addrType ipc.Transport
 }
 
-func (o *ipcServerOption) apply(c *config) {
-	c.ipcServer = o.ipcServer
+func (o *addrTypeOption) apply(c *config) {
+	c.addrType = o.addrType
 }
 
-func WithServer(ipcServer *http.Server) Option {
-	return &ipcServerOption{
-		ipcServer: ipcServer,
+func WithAddrType(addrType ipc.Transport) Option {
+	return &addrTypeOption{
+		addrType: addrType,
 	}
 }
