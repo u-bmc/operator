@@ -8,7 +8,7 @@ require (
 	connectrpc.com/grpchealth v1.3.0
 	connectrpc.com/otelconnect v0.6.0
 	connectrpc.com/vanguard v0.1.0
-	dagger.io/dagger v0.9.3
+	dagger.io/dagger v0.9.4
 	github.com/beevik/ntp v1.3.0
 	github.com/beevik/nts v0.1.0
 	github.com/bufbuild/protovalidate-go v0.4.2
