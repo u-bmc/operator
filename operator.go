@@ -3,14 +3,12 @@
 package operator
 
 import (
-	"flag"
 	"fmt"
 	"os"
-	"strings"
+	"runtime/debug"
 	"time"
 
 	"github.com/go-logr/logr"
-	"github.com/u-bmc/operator/pkg/cgroup"
 	"github.com/u-bmc/operator/service"
 	"github.com/u-bmc/operator/service/apid"
 	"github.com/u-bmc/operator/service/hardwared"
@@ -26,22 +24,22 @@ func Launch(log logr.Logger, supervisor service.Service, svcs map[string]service
 	// called from the cgroup shim or supervisord. In either case, we need to launch
 	// the service that we are being called as. Supervisord will create a symlink
 	// inside the /run directory for us to be called by.
-	if !strings.Contains(os.Args[0], "operator") {
-		shim := flag.Bool("shim", false, "Run the cgroup shim")
-		flag.Parse()
+	// if !strings.Contains(os.Args[0], "operator") {
+	// 	shim := flag.Bool("shim", false, "Run the cgroup shim")
+	// 	flag.Parse()
 
-		// When we request to be run via the shim we relaunch the same process
-		// inside a cgroup. As we need to call execve() to do this, we need to
-		// we need this flag do distinguish between being called by the shim or
-		// calling the shim from supervisord to relaunch the process.
-		if *shim {
-			return cgroup.ExecShim()
-		}
+	// 	// When we request to be run via the shim we relaunch the same process
+	// 	// inside a cgroup. As we need to call execve() to do this, we need to
+	// 	// we need this flag do distinguish between being called by the shim or
+	// 	// calling the shim from supervisord to relaunch the process.
+	// 	if *shim {
+	// 		return cgroup.ExecShim()
+	// 	}
 
-		if svc, ok := svcs[os.Args[0]]; ok {
-			return svc.Run()
-		}
-	}
+	// 	if svc, ok := svcs[os.Args[0]]; ok {
+	// 		return svc.Run()
+	// 	}
+	// }
 
 	// Should this be run here?
 	otel.SetLogger(log)
@@ -51,7 +49,8 @@ func Launch(log logr.Logger, supervisor service.Service, svcs map[string]service
 		err := func() error {
 			defer func() {
 				if r := recover(); r != nil {
-					log.Error(fmt.Errorf("%v", r), "Panic occurred in supervisord and was recovered")
+					stack := debug.Stack()
+					log.Error(fmt.Errorf("%v", r), "Panic occurred in supervisord and was recovered", "stack", string(stack))
 				}
 			}()
 
