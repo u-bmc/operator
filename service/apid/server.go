@@ -68,6 +68,110 @@ func (s *umgmtServiceServer) GetUsers(ctx context.Context, req *connect.Request[
 	}), nil
 }
 
+func (s *umgmtServiceServer) GetUserInfo(ctx context.Context, req *connect.Request[umgmtv1alpha1.GetUserInfoRequest]) (*connect.Response[umgmtv1alpha1.GetUserInfoResponse], error) {
+	if err := validate(req.Msg); err != nil {
+		return nil, connect.NewError(connect.CodeInvalidArgument, err)
+	}
+
+	return connect.NewResponse(&umgmtv1alpha1.GetUserInfoResponse{
+		Status: umgmtv1alpha1.Status_STATUS_SUCCESS,
+	}), nil
+}
+
+func (s *umgmtServiceServer) UpdateUser(ctx context.Context, req *connect.Request[umgmtv1alpha1.UpdateUserRequest]) (*connect.Response[umgmtv1alpha1.UpdateUserResponse], error) {
+	if err := validate(req.Msg); err != nil {
+		return nil, connect.NewError(connect.CodeInvalidArgument, err)
+	}
+
+	return connect.NewResponse(&umgmtv1alpha1.UpdateUserResponse{
+		Status: umgmtv1alpha1.Status_STATUS_SUCCESS,
+	}), nil
+}
+
+func (s *umgmtServiceServer) GetInventory(ctx context.Context, req *connect.Request[umgmtv1alpha1.GetInventoryRequest]) (*connect.Response[umgmtv1alpha1.GetInventoryResponse], error) {
+	if err := validate(req.Msg); err != nil {
+		return nil, connect.NewError(connect.CodeInvalidArgument, err)
+	}
+
+	return connect.NewResponse(&umgmtv1alpha1.GetInventoryResponse{
+		Status: umgmtv1alpha1.Status_STATUS_SUCCESS,
+	}), nil
+}
+
+func (s *umgmtServiceServer) GetMachineInfo(ctx context.Context, req *connect.Request[umgmtv1alpha1.GetMachineInfoRequest]) (*connect.Response[umgmtv1alpha1.GetMachineInfoResponse], error) {
+	if err := validate(req.Msg); err != nil {
+		return nil, connect.NewError(connect.CodeInvalidArgument, err)
+	}
+
+	return connect.NewResponse(&umgmtv1alpha1.GetMachineInfoResponse{
+		Status: umgmtv1alpha1.Status_STATUS_SUCCESS,
+	}), nil
+}
+
+func (s *umgmtServiceServer) GetMachineState(ctx context.Context, req *connect.Request[umgmtv1alpha1.GetMachineStateRequest]) (*connect.Response[umgmtv1alpha1.GetMachineStateResponse], error) {
+	if err := validate(req.Msg); err != nil {
+		return nil, connect.NewError(connect.CodeInvalidArgument, err)
+	}
+
+	return connect.NewResponse(&umgmtv1alpha1.GetMachineStateResponse{
+		Status: umgmtv1alpha1.Status_STATUS_SUCCESS,
+	}), nil
+}
+
+func (s *umgmtServiceServer) ChangeMachineState(ctx context.Context, req *connect.Request[umgmtv1alpha1.ChangeMachineStateRequest]) (*connect.Response[umgmtv1alpha1.ChangeMachineStateResponse], error) {
+	if err := validate(req.Msg); err != nil {
+		return nil, connect.NewError(connect.CodeInvalidArgument, err)
+	}
+
+	return connect.NewResponse(&umgmtv1alpha1.ChangeMachineStateResponse{
+		Status: umgmtv1alpha1.Status_STATUS_SUCCESS,
+	}), nil
+}
+
+func (s *umgmtServiceServer) GetSensorList(ctx context.Context, req *connect.Request[umgmtv1alpha1.GetSensorListRequest]) (*connect.Response[umgmtv1alpha1.GetSensorListResponse], error) {
+	if err := validate(req.Msg); err != nil {
+		return nil, connect.NewError(connect.CodeInvalidArgument, err)
+	}
+
+	return connect.NewResponse(&umgmtv1alpha1.GetSensorListResponse{
+		Status: umgmtv1alpha1.Status_STATUS_SUCCESS,
+	}), nil
+}
+
+func (s *umgmtServiceServer) GetSensorData(ctx context.Context, req *connect.Request[umgmtv1alpha1.GetSensorDataRequest]) (*connect.Response[umgmtv1alpha1.GetSensorDataResponse], error) {
+	if err := validate(req.Msg); err != nil {
+		return nil, connect.NewError(connect.CodeInvalidArgument, err)
+	}
+
+	return connect.NewResponse(&umgmtv1alpha1.GetSensorDataResponse{
+		Status: umgmtv1alpha1.Status_STATUS_SUCCESS,
+	}), nil
+}
+
+func (s *umgmtServiceServer) StreamHostConsole(ctx context.Context, stream *connect.BidiStream[umgmtv1alpha1.StreamHostConsoleRequest, umgmtv1alpha1.StreamHostConsoleResponse]) error {
+	return connect.NewError(connect.CodeUnimplemented, nil)
+}
+
+func (s *umgmtServiceServer) ConfigureThermalSetPoints(ctx context.Context, req *connect.Request[umgmtv1alpha1.ConfigureThermalSetPointsRequest]) (*connect.Response[umgmtv1alpha1.ConfigureThermalSetPointsResponse], error) {
+	if err := validate(req.Msg); err != nil {
+		return nil, connect.NewError(connect.CodeInvalidArgument, err)
+	}
+
+	return connect.NewResponse(&umgmtv1alpha1.ConfigureThermalSetPointsResponse{
+		Status: umgmtv1alpha1.Status_STATUS_SUCCESS,
+	}), nil
+}
+
+func (s *umgmtServiceServer) ConfigureThermalFanProfiles(ctx context.Context, req *connect.Request[umgmtv1alpha1.ConfigureThermalFanProfilesRequest]) (*connect.Response[umgmtv1alpha1.ConfigureThermalFanProfilesResponse], error) {
+	if err := validate(req.Msg); err != nil {
+		return nil, connect.NewError(connect.CodeInvalidArgument, err)
+	}
+
+	return connect.NewResponse(&umgmtv1alpha1.ConfigureThermalFanProfilesResponse{
+		Status: umgmtv1alpha1.Status_STATUS_SUCCESS,
+	}), nil
+}
+
 func validate(msg protoreflect.ProtoMessage) error {
 	v, err := protovalidate.New(protovalidate.WithFailFast(true))
 	if err != nil {
