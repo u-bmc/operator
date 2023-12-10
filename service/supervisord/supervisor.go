@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"sync"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/u-bmc/operator/pkg/log"
@@ -46,37 +48,57 @@ func (s *Service) Name() string {
 }
 
 func (s *Service) Run() error {
-	s.c.log.Info("Running supervisord service")
+	s.c.log.Info("Starting service", "service", s.c.name, "uuid", s.c.id.String())
 
-	exitCh := make(chan error)
+	// Find the path to the current executable, ideally it is always /sbin/operator
+	// but this approach is more robust
 	self, err := filepath.EvalSymlinks("/proc/self/exe")
 	if err != nil {
 		return err
 	}
 
+	var wg *sync.WaitGroup
 	for name, serv := range s.c.services {
-		if err := os.Link(self, filepath.Join("/run", name)); err != nil {
+		link := filepath.Join("/run", name)
+		s.c.log.Info("Creating symlink", "path", link, "target", self)
+		if err := os.Link(self, link); err != nil {
 			return err
 		}
 
-		go func(serv service.Service, c chan error) {
-			defer func(serv service.Service, c chan error) {
-				if r := recover(); r != nil {
-					err := fmt.Errorf("%v", r)
-					s.c.log.Error(err, "Panic occurred in service and was recovered", "service", serv.Name())
-					c <- err
-				}
-			}(serv, c)
+		wg.Add(1)
+		go func(name string, serv service.Service) {
+			delay := 1 * time.Second
+			for {
+				e := func() bool {
+					e := false
+					defer func() {
+						if r := recover(); r != nil {
+							s.c.log.Error(fmt.Errorf("%v", r), "Panic occurred in service and was recovered", "service", name)
+						}
+					}()
 
-			if err := serv.Run(); err != nil {
-				s.c.log.Error(err, "Error occurred during service runtime", "service", serv.Name())
-				exitCh <- err
-			} else {
-				s.c.log.Info("Service exited successfully", "service", serv.Name())
-				exitCh <- nil
+					if err := serv.Run(); err != nil {
+						s.c.log.Error(err, "Error occurred during service runtime", "service", name)
+						e = false
+					} else {
+						s.c.log.Info("Service exited successfully", "service", name)
+						e = true
+					}
+
+					return e
+				}()
+				if e {
+					break
+				}
+				time.Sleep(delay)
+				if delay < 30*time.Second {
+					delay *= 2
+				}
 			}
-		}(serv, exitCh)
+			wg.Done()
+		}(name, serv)
 	}
+	wg.Wait()
 
 	return nil
 }
