@@ -16,7 +16,7 @@ require (
 	github.com/go-logr/logr v1.3.0
 	github.com/go-logr/stdr v1.2.2
 	github.com/google/uuid v1.4.0
-	github.com/insomniacslk/dhcp v0.0.0-20231126010706-b0416c0f187a
+	github.com/insomniacslk/dhcp v0.0.0-20231206064809-8c70d406f6d2
 	github.com/klauspost/connect-compress/v2 v2.0.0
 	github.com/quic-go/quic-go v0.40.0
 	github.com/vishvananda/netlink v1.1.0
