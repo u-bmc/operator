@@ -4,26 +4,20 @@ package apid
 
 import (
 	"context"
-	"errors"
 
 	"connectrpc.com/connect"
 	"github.com/bufbuild/protovalidate-go"
-	"github.com/go-logr/logr"
-	"github.com/google/uuid"
 	ipcv1alpha1 "github.com/u-bmc/operator/api/gen/ipc/v1alpha1"
-	"github.com/u-bmc/operator/api/gen/ipc/v1alpha1/ipcv1alpha1connect"
 	umgmtv1alpha1 "github.com/u-bmc/operator/api/gen/umgmt/v1alpha1"
 	"github.com/u-bmc/operator/api/gen/umgmt/v1alpha1/umgmtv1alpha1connect"
+	"github.com/u-bmc/operator/pkg/user"
 
 	"google.golang.org/protobuf/reflect/protoreflect"
 )
 
 type umgmtServiceServer struct {
 	umgmtv1alpha1connect.UnimplementedUmgmtServiceHandler
-	id   uuid.UUID
-	name string
-	log  logr.Logger
-	c    ipcv1alpha1connect.IPCServiceClient
+	c config
 }
 
 func (s *umgmtServiceServer) GetUsers(ctx context.Context, req *connect.Request[umgmtv1alpha1.GetUsersRequest]) (*connect.Response[umgmtv1alpha1.GetUsersResponse], error) {
@@ -31,31 +25,47 @@ func (s *umgmtServiceServer) GetUsers(ctx context.Context, req *connect.Request[
 		return nil, connect.NewError(connect.CodeInvalidArgument, err)
 	}
 
-	topicName := "get-users"
-	publishRes, err := s.c.Publish(ctx, connect.NewRequest(&ipcv1alpha1.PublishRequest{
-		Topic:         topicName,
-		PublisherName: s.name,
-		PublisherId:   s.id.String(),
+	resp, err := s.c.ipcClient.Subscribe(ctx, connect.NewRequest(&ipcv1alpha1.SubscribeRequest{
+		Topic:          user.UserGet,
+		SubscriberName: s.c.name,
+		SubscriberId:   s.c.id.String(),
 	}))
 	if err != nil {
-		return nil, err
+		return nil, connect.NewError(connect.CodeInternal, err)
 	}
 
-	// Check the status of the publish operation
-	if publishRes.Msg.Status != ipcv1alpha1.Status_STATUS_SUCCESS {
-		return nil, connect.NewError(connect.CodeInternal, errors.New(publishRes.Msg.Status.String()))
+	if !resp.Receive() {
+		return nil, connect.NewError(connect.CodeInternal, resp.Err())
 	}
 
-	_, err = s.c.Subscribe(ctx, connect.NewRequest(&ipcv1alpha1.SubscribeRequest{
-		Topic:          topicName,
-		SubscriberName: s.name,
-		SubscriberId:   s.id.String(),
-	}))
-	if err != nil {
-		return nil, err
+	msg := resp.Msg()
+	s.c.log.Info("Received message", "msg", msg)
+
+	users := make([]*user.User, len(msg.Data))
+	for i, data := range msg.Data {
+		dm := data.AsMap()
+		u := &user.User{
+			Username:    dm["username"].(string),
+			Description: dm["description"].(string),
+			Role:        dm["role"].(user.Role),
+		}
+
+		users[i] = u
 	}
 
-	return connect.NewResponse(&umgmtv1alpha1.GetUsersResponse{}), nil
+	userpb := make([]*umgmtv1alpha1.User, len(users))
+	for i, u := range users {
+		userpb[i] = &umgmtv1alpha1.User{
+			Name:        u.Username,
+			Description: u.Description,
+			Role:        umgmtv1alpha1.Role(u.Role),
+		}
+	}
+
+	return connect.NewResponse(&umgmtv1alpha1.GetUsersResponse{
+		Users:  userpb,
+		Status: umgmtv1alpha1.Status_STATUS_SUCCESS,
+	}), nil
 }
 
 func validate(msg protoreflect.ProtoMessage) error {

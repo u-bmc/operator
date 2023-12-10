@@ -58,49 +58,40 @@ func (s *Service) Name() string {
 }
 
 func (s *Service) Run() error {
-	s.c.log.Info("apid: starting")
-	s.c.log.Info("apid: creating u-mgmt server")
-	comp := compress.WithAll(compress.LevelFastest)
-	svc := &umgmtServiceServer{
-		name: s.c.name,
-		id:   s.c.id,
-		log:  s.c.log,
-		c:    s.c.ipcClient,
-	}
+	s.c.log.Info("Starting service", "service", s.c.name, "uuid", s.c.id.String())
+	s.c.log.Info("Creating u-mgmt server", "service", s.c.name, "uuid", s.c.id.String())
 	rpcRoute, rpcHandler := umgmtv1alpha1connect.NewUmgmtServiceHandler(
-		svc,
-		comp,
+		&umgmtServiceServer{
+			c: s.c,
+		},
+		compress.WithAll(compress.LevelFastest),
 		connect.WithInterceptors(
-			otelconnect.NewInterceptor(
-				otelconnect.WithTrustRemote(),
-				otelconnect.WithoutServerPeerAttributes(),
-			),
+			otelconnect.NewInterceptor(),
 		),
 	)
 
-	s.c.log.Info("apid: creating vanguard transcoder")
+	s.c.log.Info("Creating vanguard transcoder", "service", s.c.name, "uuid", s.c.id.String())
 	services := []*vanguard.Service{vanguard.NewService(rpcRoute, rpcHandler)}
 	transcoder, err := vanguard.NewTranscoder(services)
 	if err != nil {
 		return err
 	}
 
-	s.c.log.Info("apid: creating http3 server")
+	s.c.log.Info("Creating HTTP/3 server", "service", s.c.name, "uuid", s.c.id)
 	mux := http.NewServeMux()
 	mux.Handle("/", transcoder)
 	mux.Handle(grpchealth.NewHandler(grpchealth.NewStaticChecker(umgmtv1alpha1connect.UmgmtServiceName)))
 
 	// TODO: Get from registry or config
+	// TODO: Change self signed generate function to behave the same as proper signed generate function
 	certPem, keyPem, err := cert.GenerateSelfsigned("localhost")
 	if err != nil {
 		return err
 	}
-
 	c, err := tls.X509KeyPair(certPem, keyPem)
 	if err != nil {
 		return err
 	}
-
 	tconf := &tls.Config{
 		Certificates: []tls.Certificate{c},
 		MinVersion:   tls.VersionTLS13,
@@ -112,7 +103,7 @@ func (s *Service) Run() error {
 			if p == logging.PerspectiveClient {
 				role = "client"
 			}
-
+			// Make this log level really high to not spam the logs
 			l := s.c.log.V(10).WithName("qlog").WithValues("connID", connID, "role", role)
 
 			return qlog.NewConnectionTracer(qlogr{l}, p, connID)
@@ -124,6 +115,8 @@ func (s *Service) Run() error {
 		QuicConfig: qconf,
 		TLSConfig:  tconf,
 	}
+
+	s.c.log.Info("Starting API server", "service", s.c.name, "uuid", s.c.id.String())
 
 	return hs.ListenAndServe()
 }
