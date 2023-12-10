@@ -4,8 +4,7 @@ package supervisord
 
 import (
 	"fmt"
-	"os"
-	"path/filepath"
+	"runtime/debug"
 	"sync"
 	"time"
 
@@ -52,28 +51,29 @@ func (s *Service) Run() error {
 
 	// Find the path to the current executable, ideally it is always /sbin/operator
 	// but this approach is more robust
-	self, err := filepath.EvalSymlinks("/proc/self/exe")
-	if err != nil {
-		return err
-	}
+	// self, err := filepath.EvalSymlinks("/proc/self/exe")
+	// if err != nil {
+	// 	return err
+	// }
 
-	var wg *sync.WaitGroup
+	var wg sync.WaitGroup
 	for name, serv := range s.c.services {
-		link := filepath.Join("/run", name)
-		s.c.log.Info("Creating symlink", "path", link, "target", self)
-		if err := os.Link(self, link); err != nil {
-			return err
-		}
+		// link := filepath.Join("/run", name)
+		// s.c.log.Info("Creating symlink", "path", link, "target", self)
+		// if err := os.Symlink(self, link); err != nil {
+		// 	return err
+		// }
 
 		wg.Add(1)
-		go func(name string, serv service.Service) {
+		go func(name string, serv service.Service, wg *sync.WaitGroup) {
 			delay := 1 * time.Second
 			for {
 				e := func() bool {
 					e := false
 					defer func() {
 						if r := recover(); r != nil {
-							s.c.log.Error(fmt.Errorf("%v", r), "Panic occurred in service and was recovered", "service", name)
+							stack := debug.Stack()
+							s.c.log.Error(fmt.Errorf("%v", r), "Panic occurred in service and was recovered", "service", name, "stack", string(stack))
 						}
 					}()
 
@@ -96,7 +96,7 @@ func (s *Service) Run() error {
 				}
 			}
 			wg.Done()
-		}(name, serv)
+		}(name, serv, &wg)
 	}
 	wg.Wait()
 
