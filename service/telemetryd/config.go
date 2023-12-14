@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: BSD-3-Clause
 
-package telemtryd
+package telemetryd
 
 import (
 	"github.com/go-logr/logr"

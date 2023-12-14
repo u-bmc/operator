@@ -58,7 +58,7 @@ func (s *Service) Name() string {
 	return s.c.name
 }
 
-func (s *Service) Run() error {
+func (s *Service) Run(ctx context.Context) error {
 	s.c.log.Info("Starting service", "service", s.c.name, "uuid", s.c.id.String())
 	s.c.log.Info("Creating u-mgmt server", "service", s.c.name, "uuid", s.c.id.String())
 	rpcRoute, rpcHandler := umgmtv1alpha1connect.NewUmgmtServiceHandler(

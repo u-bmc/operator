@@ -54,7 +54,7 @@ func (s *Service) Name() string {
 	return s.c.name
 }
 
-func (s *Service) Run() error {
+func (s *Service) Run(ctx context.Context) error {
 	s.c.log.Info("Starting service", "service", s.c.name, "uuid", s.c.id.String())
 	s.c.log.Info("Connecting to registry", "path", s.c.dbPath)
 	db, err := bolt.Open(s.c.dbPath, 0o600, &bolt.Options{
@@ -66,7 +66,6 @@ func (s *Service) Run() error {
 	}
 	defer db.Close()
 
-	ctx := context.Background()
 	stream, err := s.c.ipcClient.Subscribe(ctx, connect.NewRequest(&ipcv1alpha1.SubscribeRequest{
 		Topic:          "registry",
 		SubscriberName: s.c.name,
