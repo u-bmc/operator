@@ -2,7 +2,11 @@
 
 package service
 
-import "github.com/google/uuid"
+import (
+	"context"
+
+	"github.com/google/uuid"
+)
 
 // Service is an interface for long running processes or daemons.
 // A service will be restarted if it returns an error.
@@ -20,21 +24,5 @@ type Service interface {
 
 	// Run starts the service with the provided context.
 	// It returns an error if the service needs to be restarted.
-	Run() error
-}
-
-// NewServiceMap creates a map of services with their names as keys.
-// It takes a slice of pointers to Service objects as input and returns a map.
-func NewServiceMap(svcs ...Service) map[string]Service {
-	// Initialize a map with size equal to the number of services
-	m := make(map[string]Service, len(svcs))
-
-	// Iterate over the services and add them to the map
-	for _, svc := range svcs {
-		// Use the service name as the key
-		m[svc.Name()] = svc
-	}
-
-	// Return the populated map
-	return m
+	Run(ctx context.Context) error
 }

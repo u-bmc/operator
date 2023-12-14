@@ -58,7 +58,7 @@ func (s *Service) Name() string {
 	return s.c.name
 }
 
-func (s *Service) Run() error {
+func (s *Service) Run(ctx context.Context) error {
 	s.c.log.Info("Starting service", "service", s.c.name, "uuid", s.c.id.String())
 	s.c.log.Info("Creating IPC server", "addr", s.c.addr, "addrType", s.c.addrType)
 	var (
@@ -87,7 +87,7 @@ func (s *Service) Run() error {
 	}
 
 	s.c.log.Info("Creating message cache", "ttl", 5*time.Second, "maxEntries", 10)
-	ca := cache.NewCache(context.Background(), 5*time.Second, 10)
+	ca := cache.NewCache(ctx, 5*time.Second, 10)
 
 	s.c.log.Info("Creating HTTP/s multiplexer", "service", s.c.name, "uuid", s.c.id)
 	mux := http.NewServeMux()

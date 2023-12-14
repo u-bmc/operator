@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: BSD-3-Clause
 
-package telemtryd
+package telemetryd
 
 import (
 	"context"
@@ -48,9 +48,8 @@ func (s *Service) Name() string {
 	return s.c.name
 }
 
-func (s *Service) Run() error {
+func (s *Service) Run(ctx context.Context) error {
 	s.c.log.Info("Starting service", "service", s.c.name, "uuid", s.c.id.String())
-	ctx := context.Background()
 
 	for {
 		time.Sleep(5 * time.Second)
