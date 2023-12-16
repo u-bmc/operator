@@ -30,7 +30,7 @@ jobs:
           verb: run
           args: go run ci/main.go -cmd "go build -o output/ ./examples/..."
           version: "0.9.3"
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: build-artifact
           path: output
