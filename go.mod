@@ -21,7 +21,7 @@ require (
 	github.com/insomniacslk/dhcp v0.0.0-20231206064809-8c70d406f6d2
 	github.com/klauspost/connect-compress/v2 v2.0.0
 	github.com/peterbourgon/unixtransport v0.0.3
-	github.com/quic-go/quic-go v0.40.0
+	github.com/quic-go/quic-go v0.40.1
 	github.com/vishvananda/netlink v1.1.0
 	github.com/warthog618/gpiod v0.8.2
 	go.bug.st/serial v1.6.1
