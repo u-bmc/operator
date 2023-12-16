@@ -16,7 +16,7 @@ require (
 	github.com/cloudflare/roughtime v0.0.0-20231130205103-56090f576343
 	github.com/go-logr/logr v1.3.0
 	github.com/go-logr/stdr v1.2.2
-	github.com/google/uuid v1.4.0
+	github.com/google/uuid v1.5.0
 	github.com/insomniacslk/dhcp v0.0.0-20231206064809-8c70d406f6d2
 	github.com/klauspost/connect-compress/v2 v2.0.0
 	github.com/peterbourgon/unixtransport v0.0.3
