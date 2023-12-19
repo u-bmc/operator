@@ -1,6 +1,8 @@
 module github.com/u-bmc/operator
 
-go 1.21
+go 1.21.1
+
+toolchain go1.21.5
 
 require (
 	buf.build/gen/go/bufbuild/protovalidate/protocolbuffers/go v1.31.0-20231115204500-e097f827e652.2
@@ -14,7 +16,7 @@ require (
 	github.com/beevik/ntp v1.3.0
 	github.com/beevik/nts v0.1.0
 	github.com/bufbuild/protovalidate-go v0.4.3
-	github.com/cloudflare/roughtime v0.0.0-20231130205103-56090f576343
+	github.com/cloudflare/roughtime v0.0.0-20231219162049-450b7a11cc48
 	github.com/go-logr/logr v1.3.0
 	github.com/go-logr/stdr v1.2.2
 	github.com/google/uuid v1.4.0
