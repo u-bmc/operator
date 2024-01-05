@@ -5,16 +5,15 @@ package netd
 import (
 	"github.com/go-logr/logr"
 	"github.com/google/uuid"
-	"github.com/u-bmc/operator/api/gen/ipc/v1alpha1/ipcv1alpha1connect"
 	"github.com/u-bmc/operator/pkg/iface"
 )
 
 type config struct {
-	name      string
-	id        uuid.UUID
-	log       logr.Logger
-	ipcClient ipcv1alpha1connect.IPCServiceClient
-	ifaces    []iface.Iface
+	name    string
+	id      uuid.UUID
+	log     logr.Logger
+	ipcAddr string
+	ifaces  []iface.Iface
 }
 
 type Option interface {
@@ -63,17 +62,17 @@ func WithLogger(log logr.Logger) Option {
 	}
 }
 
-type ipcClientOption struct {
-	ipcClient ipcv1alpha1connect.IPCServiceClient
+type ipcAddrOption struct {
+	ipcAddr string
 }
 
-func (o *ipcClientOption) apply(c *config) {
-	c.ipcClient = o.ipcClient
+func (o *ipcAddrOption) apply(c *config) {
+	c.ipcAddr = o.ipcAddr
 }
 
-func WithIPCClient(ipcClient ipcv1alpha1connect.IPCServiceClient) Option {
-	return &ipcClientOption{
-		ipcClient: ipcClient,
+func WithIPCAddr(ipcAddr string) Option {
+	return &ipcAddrOption{
+		ipcAddr: ipcAddr,
 	}
 }
 
