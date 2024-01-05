@@ -4,14 +4,14 @@ package kvmd
 
 import (
 	"context"
+	"errors"
 	"time"
 
-	"connectrpc.com/connect"
 	"github.com/google/uuid"
-	ipcv1alpha1 "github.com/u-bmc/operator/api/gen/ipc/v1alpha1"
-	"github.com/u-bmc/operator/pkg/ipc"
+	"github.com/nats-io/nats.go"
+	"github.com/nats-io/nats.go/micro"
 	"github.com/u-bmc/operator/pkg/log"
-	"google.golang.org/protobuf/types/known/structpb"
+	"github.com/u-bmc/operator/pkg/version"
 )
 
 const (
@@ -25,10 +25,10 @@ type Service struct {
 
 func New(opts ...Option) *Service {
 	c := config{
-		name:      DefaultName,
-		id:        uuid.MustParse(DefaultUUID),
-		log:       log.NewDefaultLogger(),
-		ipcClient: ipc.NewDefaultClient(),
+		name:    DefaultName,
+		id:      uuid.MustParse(DefaultUUID),
+		log:     log.NewDefaultLogger(),
+		ipcAddr: nats.DefaultURL,
 	}
 
 	for _, opt := range opts {
@@ -51,24 +51,41 @@ func (s *Service) Name() string {
 func (s *Service) Run(ctx context.Context) error {
 	s.c.log.Info("Starting service", "service", s.c.name, "uuid", s.c.id.String())
 
+	s.c.log.Info("Connecting to ipcd", "service", s.c.name, "uuid", s.c.id.String(), "addr", s.c.ipcAddr)
+	var (
+		nc  *nats.Conn
+		err error
+	)
 	for {
-		time.Sleep(5 * time.Second)
-		spb, err := structpb.NewStruct(map[string]interface{}{
-			"foo": "bar",
-		})
+		nc, err = nats.Connect(s.c.ipcAddr)
 		if err != nil {
-			continue
+			if errors.Is(err, nats.ErrNoServers) {
+				time.Sleep(time.Second)
+				continue
+			}
+			return err
 		}
-
-		_, err = s.c.ipcClient.Publish(ctx, connect.NewRequest(&ipcv1alpha1.PublishRequest{
-			Topic:         "kvmd",
-			PublisherName: s.c.name,
-			PublisherId:   s.c.id.String(),
-			Data:          []*structpb.Struct{spb},
-		}))
-		if err != nil {
-			s.c.log.Error(err, "Failed to publish response", "topic", "kvmd", "service", s.c.name, "uuid", s.c.id.String())
-			continue
-		}
+		break
 	}
+
+	srv, err := micro.AddService(nc, micro.Config{
+		Name:        s.c.name,
+		Version:     version.SemVer,
+		Description: "Handles KVM configuration",
+	})
+	if err != nil {
+		return err
+	}
+
+	root := srv.AddGroup("kvm")
+
+	if err := root.AddEndpoint("stub", micro.HandlerFunc(s.handleStub)); err != nil {
+		return err
+	}
+
+	<-ctx.Done()
+
+	return srv.Stop()
 }
+
+func (s *Service) handleStub(req micro.Request) {}
