@@ -4,27 +4,23 @@ package telemetryd
 
 import (
 	"context"
-	"time"
 
-	"connectrpc.com/connect"
 	"github.com/google/uuid"
-	ipcv1alpha1 "github.com/u-bmc/operator/api/gen/ipc/v1alpha1"
-	"github.com/u-bmc/operator/pkg/ipc"
 	"github.com/u-bmc/operator/pkg/log"
-	"google.golang.org/protobuf/types/known/structpb"
 )
 
 const (
-	DefaultName = "telemtryd"
+	DefaultName = "telemetryd"
 	DefaultUUID = "e163a422-d06e-4c78-9f91-cdc060db530b"
 )
 
 func New(opts ...Option) *Service {
 	c := config{
-		name:      DefaultName,
-		id:        uuid.MustParse(DefaultUUID),
-		log:       log.NewDefaultLogger(),
-		ipcClient: ipc.NewDefaultClient(),
+		name:    DefaultName,
+		id:      uuid.MustParse(DefaultUUID),
+		log:     log.NewDefaultLogger(),
+		tracing: true,
+		metrics: true,
 	}
 
 	for _, opt := range opts {
@@ -51,24 +47,9 @@ func (s *Service) Name() string {
 func (s *Service) Run(ctx context.Context) error {
 	s.c.log.Info("Starting service", "service", s.c.name, "uuid", s.c.id.String())
 
-	for {
-		time.Sleep(5 * time.Second)
-		spb, err := structpb.NewStruct(map[string]interface{}{
-			"foo": "bar",
-		})
-		if err != nil {
-			continue
-		}
+	// TODO: implement otlp collector service here, no need for ipc
 
-		_, err = s.c.ipcClient.Publish(ctx, connect.NewRequest(&ipcv1alpha1.PublishRequest{
-			Topic:         "telemetrydd",
-			PublisherName: s.c.name,
-			PublisherId:   s.c.id.String(),
-			Data:          []*structpb.Struct{spb},
-		}))
-		if err != nil {
-			s.c.log.Error(err, "Failed to publish response", "topic", "telemetryd", "service", s.c.name, "uuid", s.c.id.String())
-			continue
-		}
-	}
+	<-ctx.Done()
+
+	return nil
 }

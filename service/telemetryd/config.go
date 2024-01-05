@@ -5,14 +5,14 @@ package telemetryd
 import (
 	"github.com/go-logr/logr"
 	"github.com/google/uuid"
-	"github.com/u-bmc/operator/api/gen/ipc/v1alpha1/ipcv1alpha1connect"
 )
 
 type config struct {
-	name      string
-	id        uuid.UUID
-	log       logr.Logger
-	ipcClient ipcv1alpha1connect.IPCServiceClient
+	name    string
+	id      uuid.UUID
+	log     logr.Logger
+	tracing bool
+	metrics bool
 }
 
 type Option interface {
@@ -61,16 +61,30 @@ func WithLogger(log logr.Logger) Option {
 	}
 }
 
-type ipcClientOption struct {
-	ipcClient ipcv1alpha1connect.IPCServiceClient
+type traceProviderOption struct {
+	tracing bool
 }
 
-func (o *ipcClientOption) apply(c *config) {
-	c.ipcClient = o.ipcClient
+func (o *traceProviderOption) apply(c *config) {
+	c.tracing = o.tracing
 }
 
-func WithIPCClient(ipcClient ipcv1alpha1connect.IPCServiceClient) Option {
-	return &ipcClientOption{
-		ipcClient: ipcClient,
+func WithTracing(tracing bool) Option {
+	return &traceProviderOption{
+		tracing: tracing,
+	}
+}
+
+type metricProviderOption struct {
+	metrics bool
+}
+
+func (o *metricProviderOption) apply(c *config) {
+	c.metrics = o.metrics
+}
+
+func WithMetrics(metrics bool) Option {
+	return &metricProviderOption{
+		metrics: metrics,
 	}
 }
