@@ -21,9 +21,11 @@ import (
 	"github.com/quic-go/quic-go/http3"
 	"github.com/quic-go/quic-go/logging"
 	"github.com/quic-go/quic-go/qlog"
+	"github.com/rs/cors"
 	"github.com/u-bmc/operator/api/gen/umgmt/v1alpha1/umgmtv1alpha1connect"
 	"github.com/u-bmc/operator/pkg/cert"
 	"github.com/u-bmc/operator/pkg/log"
+	"github.com/unrolled/secure"
 )
 
 const (
@@ -111,6 +113,46 @@ func (s *Service) Run(ctx context.Context) error {
 	mux.Handle(grpcreflect.NewHandlerV1(reflector))
 	mux.Handle(grpcreflect.NewHandlerV1Alpha(reflector))
 
+	secureMiddleware := secure.New(secure.Options{
+		HostsProxyHeaders:     []string{"X-Forwarded-Host"},
+		SSLRedirect:           true,
+		SSLProxyHeaders:       map[string]string{"X-Forwarded-Proto": "https"},
+		FrameDeny:             true,
+		ContentTypeNosniff:    true,
+		BrowserXssFilter:      true,
+		ContentSecurityPolicy: "script-src $NONCE",
+	})
+
+	handler := secureMiddleware.Handler(mux)
+
+	corsMiddleware := cors.New(cors.Options{
+		AllowedMethods: []string{
+			http.MethodGet,
+			http.MethodPost,
+		},
+		AllowedOrigins: []string{"example.com"},
+		AllowedHeaders: []string{
+			"Accept-Encoding",
+			"Content-Encoding",
+			"Content-Type",
+			"Connect-Protocol-Version",
+			"Connect-Timeout-Ms",
+			"Connect-Accept-Encoding",  // Unused in web browsers, but added for future-proofing
+			"Connect-Content-Encoding", // Unused in web browsers, but added for future-proofing
+			"Grpc-Timeout",             // Used for gRPC-web
+			"X-Grpc-Web",               // Used for gRPC-web
+			"X-User-Agent",             // Used for gRPC-web
+		},
+		ExposedHeaders: []string{
+			"Content-Encoding",         // Unused in web browsers, but added for future-proofing
+			"Connect-Content-Encoding", // Unused in web browsers, but added for future-proofing
+			"Grpc-Status",              // Required for gRPC-web
+			"Grpc-Message",             // Required for gRPC-web
+		},
+	})
+
+	handler = corsMiddleware.Handler(handler)
+
 	s.c.log.Info("Generating certificates", "service", s.c.name, "uuid", s.c.id)
 	// TODO: Get from registry or config
 	// TODO: Change self signed generate function to behave the same as proper signed generate function
@@ -140,14 +182,52 @@ func (s *Service) Run(ctx context.Context) error {
 		},
 	}
 
-	s.c.log.Info("Creating HTTP/3 server", "service", s.c.name, "uuid", s.c.id, "addr", "[::]:443")
-	hs := http3.Server{
-		Handler:    mux,
+	s.c.log.Info("Creating HTTP/3 server", "service", s.c.name, "uuid", s.c.id, "addr", "[::]:443", "protocol", "udp")
+	h3 := http3.Server{
+		Handler:    handler,
 		QuicConfig: qconf,
 		TLSConfig:  tconf,
 	}
 
+	s.c.log.Info("Creating HTTP/2 server", "service", s.c.name, "uuid", s.c.id, "addr", "[::]:443", "protocol", "tcp")
+	h2 := &http.Server{
+		Handler:           handler,
+		TLSConfig:         tconf,
+		ReadHeaderTimeout: 5 * time.Second,
+	}
+
 	s.c.log.Info("Starting API server", "service", s.c.name, "uuid", s.c.id.String())
 
-	return hs.ListenAndServe()
+	errChan := make(chan error, 1)
+
+	go func() {
+		errChan <- h3.ListenAndServe()
+	}()
+
+	go func() {
+		// The certificate and key are already provided in the tls.Config
+		errChan <- h2.ListenAndServeTLS("", "")
+	}()
+
+	select {
+	case <-ctx.Done():
+		s.c.log.Info("Shutting down API server", "service", s.c.name, "uuid", s.c.id.String())
+
+		// Ignore error here as this best effort only.
+		_ = h3.CloseGracefully(5 * time.Second)
+
+		// As the parent context is canceled we'll make a new one that is still valid.
+		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+		defer cancel()
+
+		// Ignore error here as this best effort only.
+		_ = h2.Shutdown(ctx) //nolint:contextcheck
+	case err := <-errChan:
+		// Ignore error here as this best effort only.
+		_ = h3.Close()
+		_ = h2.Close()
+		return err
+	}
+
+	return nil
 }
