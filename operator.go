@@ -9,6 +9,8 @@ import (
 	"cirello.io/oversight"
 	"github.com/go-logr/logr"
 	"github.com/u-bmc/operator/pkg/log"
+	"github.com/u-bmc/operator/pkg/telemetry"
+	"github.com/u-bmc/operator/pkg/version"
 	"github.com/u-bmc/operator/service"
 	"github.com/u-bmc/operator/service/apid"
 	"github.com/u-bmc/operator/service/hardwared"
@@ -29,6 +31,11 @@ func Launch(ctx context.Context, opts ...Option) error {
 	for _, opt := range opts {
 		opt.apply(&c)
 	}
+
+	// Note: Tracing currently noop until configurable
+	telemetry.SetupOtelSDK(ctx, telemetry.NewResource("u-bmc", version.SemVer), c.log)
+
+	c.log.Info("Starting u-bmc operator", "version", version.Version())
 
 	p := make([]oversight.ChildProcessSpecification, len(c.svcs))
 	for i, svc := range c.svcs {
