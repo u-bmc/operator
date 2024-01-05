@@ -5,15 +5,14 @@ package ipcd
 import (
 	"github.com/go-logr/logr"
 	"github.com/google/uuid"
-	"github.com/u-bmc/operator/pkg/ipc"
+	"github.com/nats-io/nats-server/v2/server"
 )
 
 type config struct {
-	name     string
-	id       uuid.UUID
-	log      logr.Logger
-	addr     string
-	addrType ipc.Transport
+	name string
+	id   uuid.UUID
+	log  logr.Logger
+	so   server.Options
 }
 
 type Option interface {
@@ -62,30 +61,16 @@ func WithLogger(log logr.Logger) Option {
 	}
 }
 
-type addrOption struct {
-	addr string
+type serverOption struct {
+	so server.Options
 }
 
-func (o *addrOption) apply(c *config) {
-	c.addr = o.addr
+func (o *serverOption) apply(c *config) {
+	c.so = o.so
 }
 
-func WithAddr(addr string) Option {
-	return &addrOption{
-		addr: addr,
-	}
-}
-
-type addrTypeOption struct {
-	addrType ipc.Transport
-}
-
-func (o *addrTypeOption) apply(c *config) {
-	c.addrType = o.addrType
-}
-
-func WithAddrType(addrType ipc.Transport) Option {
-	return &addrTypeOption{
-		addrType: addrType,
+func WithServer(so server.Options) Option {
+	return &serverOption{
+		so: so,
 	}
 }
