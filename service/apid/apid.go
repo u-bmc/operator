@@ -5,7 +5,9 @@ package apid
 import (
 	"context"
 	"crypto/tls"
+	"errors"
 	"net/http"
+	"time"
 
 	"connectrpc.com/connect"
 	"connectrpc.com/grpchealth"
@@ -14,13 +16,13 @@ import (
 	"connectrpc.com/vanguard"
 	"github.com/google/uuid"
 	compress "github.com/klauspost/connect-compress/v2"
+	"github.com/nats-io/nats.go"
 	"github.com/quic-go/quic-go"
 	"github.com/quic-go/quic-go/http3"
 	"github.com/quic-go/quic-go/logging"
 	"github.com/quic-go/quic-go/qlog"
 	"github.com/u-bmc/operator/api/gen/umgmt/v1alpha1/umgmtv1alpha1connect"
 	"github.com/u-bmc/operator/pkg/cert"
-	"github.com/u-bmc/operator/pkg/ipc"
 	"github.com/u-bmc/operator/pkg/log"
 )
 
@@ -35,10 +37,10 @@ type Service struct {
 
 func New(opts ...Option) *Service {
 	c := config{
-		name:      DefaultName,
-		id:        uuid.MustParse(DefaultUUID),
-		log:       log.NewDefaultLogger(),
-		ipcClient: ipc.NewDefaultClient(),
+		name:    DefaultName,
+		id:      uuid.MustParse(DefaultUUID),
+		log:     log.NewDefaultLogger(),
+		ipcAddr: nats.DefaultURL,
 	}
 
 	for _, opt := range opts {
@@ -60,10 +62,29 @@ func (s *Service) Name() string {
 
 func (s *Service) Run(ctx context.Context) error {
 	s.c.log.Info("Starting service", "service", s.c.name, "uuid", s.c.id.String())
+
+	s.c.log.Info("Connecting to ipcd", "service", s.c.name, "uuid", s.c.id.String(), "addr", s.c.ipcAddr)
+	var (
+		nc  *nats.Conn
+		err error
+	)
+	for {
+		nc, err = nats.Connect(s.c.ipcAddr)
+		if err != nil {
+			if errors.Is(err, nats.ErrNoServers) {
+				time.Sleep(time.Second)
+				continue
+			}
+			return err
+		}
+		break
+	}
+
 	s.c.log.Info("Creating u-mgmt server", "service", s.c.name, "uuid", s.c.id.String())
 	rpcRoute, rpcHandler := umgmtv1alpha1connect.NewUmgmtServiceHandler(
 		&umgmtServiceServer{
-			c: s.c,
+			c:  s.c,
+			nc: nc,
 		},
 		compress.WithAll(compress.LevelFastest),
 		connect.WithInterceptors(
