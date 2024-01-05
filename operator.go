@@ -4,7 +4,6 @@ package operator
 
 import (
 	"context"
-	"time"
 
 	"cirello.io/oversight"
 	"github.com/go-logr/logr"
@@ -47,7 +46,8 @@ func Launch(ctx context.Context, opts ...Option) error {
 	}
 
 	supervise := oversight.New(
-		oversight.WithSpecification(-1, 10*time.Second, oversight.OneForOne()),
+		oversight.WithSpecification(-1, 0, oversight.OneForOne()),
+		oversight.WithLogger(log.NewOversightLogger(c.log)),
 		oversight.Process(p...),
 	)
 
