@@ -4,18 +4,23 @@ package registryd
 
 import (
 	"context"
+	"crypto/rand"
+	"errors"
 	"fmt"
-	"strings"
 	"time"
 
-	"connectrpc.com/connect"
 	"github.com/google/uuid"
-	ipcv1alpha1 "github.com/u-bmc/operator/api/gen/ipc/v1alpha1"
-	"github.com/u-bmc/operator/pkg/ipc"
+	"github.com/nats-io/nats.go"
+	"github.com/nats-io/nats.go/micro"
+	umgmtv1alpha1 "github.com/u-bmc/operator/api/gen/umgmt/v1alpha1"
 	"github.com/u-bmc/operator/pkg/log"
-	"github.com/u-bmc/operator/pkg/user"
+	"github.com/u-bmc/operator/pkg/telemetry"
+	"github.com/u-bmc/operator/pkg/version"
 	bolt "go.etcd.io/bbolt"
-	"google.golang.org/protobuf/types/known/structpb"
+	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/trace"
+	"golang.org/x/crypto/argon2"
+	"google.golang.org/protobuf/proto"
 )
 
 const (
@@ -25,16 +30,18 @@ const (
 )
 
 type Service struct {
-	c config
+	c      config
+	db     *bolt.DB
+	tracer trace.Tracer
 }
 
 func New(opts ...Option) *Service {
 	c := config{
-		name:      DefaultName,
-		id:        uuid.MustParse(DefaultUUID),
-		log:       log.NewDefaultLogger(),
-		ipcClient: ipc.NewDefaultClient(),
-		dbPath:    DefaultDBPath,
+		name:    DefaultName,
+		id:      uuid.MustParse(DefaultUUID),
+		log:     log.NewDefaultLogger(),
+		ipcAddr: nats.DefaultURL,
+		dbPath:  DefaultDBPath,
 	}
 
 	for _, opt := range opts {
@@ -56,6 +63,11 @@ func (s *Service) Name() string {
 
 func (s *Service) Run(ctx context.Context) error {
 	s.c.log.Info("Starting service", "service", s.c.name, "uuid", s.c.id.String())
+	s.tracer = otel.Tracer(
+		fmt.Sprintf("%s/%s", s.c.name, s.c.id.String()),
+		trace.WithInstrumentationVersion(version.SemVer),
+	)
+
 	s.c.log.Info("Connecting to registry", "path", s.c.dbPath)
 	db, err := bolt.Open(s.c.dbPath, 0o600, &bolt.Options{
 		Timeout: 5 * time.Second,
@@ -64,271 +76,130 @@ func (s *Service) Run(ctx context.Context) error {
 		s.c.log.Error(err, "Failed to open registry", "path", s.c.dbPath)
 		return err
 	}
-	defer db.Close()
+	s.db = db
+	defer s.db.Close()
 
-	stream, err := s.c.ipcClient.Subscribe(ctx, connect.NewRequest(&ipcv1alpha1.SubscribeRequest{
-		Topic:          "registry",
-		SubscriberName: s.c.name,
-		SubscriberId:   s.c.id.String(),
-	}))
+	s.c.log.Info("Connecting to ipcd", "service", s.c.name, "uuid", s.c.id.String(), "addr", s.c.ipcAddr)
+	var nc *nats.Conn
+	for {
+		nc, err = nats.Connect(s.c.ipcAddr)
+		if err != nil {
+			if errors.Is(err, nats.ErrNoServers) {
+				time.Sleep(time.Second)
+				continue
+			}
+			return err
+		}
+		break
+	}
+
+	srv, err := micro.AddService(nc, micro.Config{
+		Name:        s.c.name,
+		Version:     version.SemVer,
+		Description: "Handles registry operations",
+	})
 	if err != nil {
-		s.c.log.Error(err, "Failed to subscribe to topic", "topic", "registry")
-
 		return err
 	}
 
-	for stream.Receive() {
-		if stream.Msg().Topic != "registry" {
-			continue
-		}
+	user := srv.AddGroup("user")
 
-		recipient := stream.Msg().PublisherName
-
-		s.c.log.V(10).Info("Received message", "ID", stream.Msg().MessageId, "from", stream.Msg().PublisherName)
-
-		msg := stream.Msg().GetData()
-		for _, v := range msg {
-			s.createUserHelper(ctx, db, v, recipient)
-			s.deleteUserHelper(ctx, db, v, recipient)
-			s.updateUserHelper(ctx, db, v, recipient)
-			s.getUsersHelper(ctx, db, v, recipient)
-			s.checkPasswordHelper(ctx, db, v, recipient)
-			s.checkRoleHelper(ctx, db, v, recipient)
-		}
+	if err := user.AddEndpoint("create", telemetry.TracedHandler(ctx, s.handleUserCreate)); err != nil {
+		return err
 	}
 
-	s.c.log.Error(stream.Err(), "Stream ended unexpectedly", "service", s.c.name, "uuid", s.c.id.String())
+	if err := user.AddEndpoint("delete", telemetry.TracedHandler(ctx, s.handleUserDelete)); err != nil {
+		return err
+	}
 
-	return fmt.Errorf("unexpected stream end: %w", stream.Err())
+	if err := user.AddEndpoint("list", telemetry.TracedHandler(ctx, s.handleUserList)); err != nil {
+		return err
+	}
+
+	<-ctx.Done()
+
+	return srv.Stop()
 }
 
-// createUserHelper is a helper function that creates a new user.
-func (s *Service) createUserHelper(ctx context.Context, db *bolt.DB, st *structpb.Struct, recipient string) {
-	// Check if UserCreate field exists in the struct
-	if f, ok := st.Fields[user.UserCreate]; ok {
-		// Initialize status map with status set to true
-		status := map[string]any{
-			"status": true,
+func (s *Service) handleUserCreate(ctx context.Context, req micro.Request) {
+	ctx, span := s.tracer.Start(ctx, "handleUserCreate")
+
+	user := &umgmtv1alpha1.User{}
+	if err := proto.Unmarshal(req.Data(), user); err != nil {
+		s.c.log.Error(err, "failed to unmarshal request data")
+	}
+
+	if user.Authentication.Method == umgmtv1alpha1.AuthenticationMethod_AUTHENTICATION_METHOD_PASSWORD {
+		salt := make([]byte, 16)
+		if _, err := rand.Read(salt); err != nil {
+			s.c.log.Error(err, "failed to create salt", "service", s.c.name, "uuid", s.c.id.String())
 		}
 
-		// Attempt to create user with provided data
-		if err := createUser(db, f.GetStructValue()); err != nil {
-			// Log error and set status to false if user creation fails
-			s.c.log.Error(err, "registryd: failed to create user")
-			status["status"] = false
+		if err := writeData(s.db, "usersalt", user.Name, salt); err != nil {
+			s.c.log.Error(err, "failed to write salt", "service", s.c.name, "uuid", s.c.id.String())
 		}
 
-		// Marshal status into a structpb.Struct
-		ss, err := structpb.NewStruct(status)
-		if err != nil {
-			// Log error and return if marshaling fails
-			s.c.log.Error(err, "registryd: failed to marshal status")
-			return
-		}
+		user.Authentication.Data = argon2.IDKey(user.Authentication.Data, salt, 1, 64*1024, 4, 32)
+	}
 
-		// Publish the status to the recipient
-		res, err := s.c.ipcClient.Publish(ctx, connect.NewRequest(&ipcv1alpha1.PublishRequest{
-			Topic:         recipient,
-			PublisherName: s.c.name,
-			PublisherId:   s.c.id.String(),
-			Data:          []*structpb.Struct{ss},
-		}))
-		if err != nil {
-			// Log error and return if publishing fails
-			s.c.log.Error(err, "registryd: failed to publish response", "topic", recipient)
-			return
-		}
+	if err := writeData(s.db, "user", user.Name, user); err != nil {
+		s.c.log.Error(err, "failed to write user", "service", s.c.name, "uuid", s.c.id.String())
+	}
 
-		// Log the status of the published response
-		s.c.log.Info("registryd: published response", "status", res.Msg.Status.String())
+	span.End()
+
+	if err := req.Respond(nil, micro.WithHeaders(micro.Headers(telemetry.HeaderFromContext(ctx)))); err != nil {
+		s.c.log.Error(err, "failed to respond to request")
 	}
 }
 
-func (s *Service) deleteUserHelper(ctx context.Context, db *bolt.DB, st *structpb.Struct, recipient string) {
-	if f, ok := st.Fields[user.UserDelete]; ok {
-		status := map[string]any{
-			"status": true,
-		}
+func (s *Service) handleUserDelete(ctx context.Context, req micro.Request) {
+	ctx, span := s.tracer.Start(ctx, "handleUserDelete")
 
-		if err := deleteUser(db, f.GetStringValue()); err != nil {
-			s.c.log.Error(err, "registryd: failed to delete user")
-			status["status"] = false
-		}
+	if err := deleteData(s.db, "user", string(req.Data())); err != nil {
+		s.c.log.Error(err, "failed to delete user", "service", s.c.name, "uuid", s.c.id.String())
+	}
 
-		ss, err := structpb.NewStruct(status)
-		if err != nil {
-			s.c.log.Error(err, "registryd: failed to marshal status")
-		}
+	if err := deleteData(s.db, "usersalt", string(req.Data())); err != nil {
+		s.c.log.Error(err, "failed to delete user salt", "service", s.c.name, "uuid", s.c.id.String())
+	}
 
-		res, err := s.c.ipcClient.Publish(ctx, connect.NewRequest(&ipcv1alpha1.PublishRequest{
-			Topic:         recipient,
-			PublisherName: s.c.name,
-			PublisherId:   s.c.id.String(),
-			Data:          []*structpb.Struct{ss},
-		}))
-		if err != nil {
-			s.c.log.Error(err, "registryd: failed to publish response", "topic", recipient)
-			return
-		}
+	span.End()
 
-		s.c.log.Info("registryd: published response", "status", res.Msg.Status.String())
+	if err := req.Respond(nil, micro.WithHeaders(micro.Headers(telemetry.HeaderFromContext(ctx)))); err != nil {
+		s.c.log.Error(err, "failed to respond to request")
 	}
 }
 
-func (s *Service) updateUserHelper(ctx context.Context, db *bolt.DB, st *structpb.Struct, recipient string) {
-	if f, ok := st.Fields[user.UserUpdate]; ok {
-		status := map[string]any{
-			"status": true,
-		}
+func (s *Service) handleUserList(ctx context.Context, req micro.Request) {
+	ctx, span := s.tracer.Start(ctx, "handleUserGetAll")
 
-		if err := updateUser(db, f.GetStructValue()); err != nil {
-			s.c.log.Error(err, "registryd: failed to update user")
-			status["status"] = false
-		}
-
-		ss, err := structpb.NewStruct(status)
-		if err != nil {
-			s.c.log.Error(err, "registryd: failed to marshal status")
-			return
-		}
-
-		res, err := s.c.ipcClient.Publish(ctx, connect.NewRequest(&ipcv1alpha1.PublishRequest{
-			Topic:         recipient,
-			PublisherName: s.c.name,
-			PublisherId:   s.c.id.String(),
-			Data:          []*structpb.Struct{ss},
-		}))
-		if err != nil {
-			s.c.log.Error(err, "registryd: failed to publish response", "topic", recipient)
-			return
-		}
-
-		s.c.log.Info("registryd: published response", "status", res.Msg.Status.String())
+	names, err := getKeys(s.db, "user")
+	if err != nil {
+		s.c.log.Error(err, "failed to get user list", "service", s.c.name, "uuid", s.c.id.String())
 	}
-}
 
-func (s *Service) getUsersHelper(ctx context.Context, db *bolt.DB, st *structpb.Struct, recipient string) {
-	if _, ok := st.Fields[user.UserGet]; ok {
-		users, err := getUsers(db)
-		if err != nil {
-			s.c.log.Error(err, "registryd: failed to get users")
+	users := make([]*umgmtv1alpha1.User, len(names))
+
+	for i, name := range names {
+		user := &umgmtv1alpha1.User{}
+		if err := readData(s.db, "user", name, user); err != nil {
+			s.c.log.Error(err, "failed to read user", "service", s.c.name, "uuid", s.c.id.String())
 		}
 
-		data := make([]*structpb.Struct, 0, len(users))
-		for _, u := range users {
-			um := make(map[string]any)
-			um["username"] = u.Username
-			um["description"] = u.Description
-			um["role"] = u.Role
-			us, err := structpb.NewStruct(um)
-			if err != nil {
-				s.c.log.Error(err, "registryd: failed to marshal user", "user", u)
-			}
-			data = append(data, us)
-		}
-
-		res, err := s.c.ipcClient.Publish(ctx, connect.NewRequest(&ipcv1alpha1.PublishRequest{
-			Topic:         recipient,
-			PublisherName: s.c.name,
-			PublisherId:   s.c.id.String(),
-			Data:          data,
-		}))
-		if err != nil {
-			s.c.log.Error(err, "registryd: failed to publish response", "topic", recipient)
-			return
-		}
-
-		s.c.log.Info("registryd: published response", "status", res.Msg.Status.String())
+		users[i] = user
 	}
-}
 
-func (s *Service) checkPasswordHelper(ctx context.Context, db *bolt.DB, st *structpb.Struct, recipient string) {
-	if f, ok := st.Fields[user.UserCheckPassword]; ok {
-		status := map[string]any{
-			"status": true,
-		}
-
-		data := strings.Split(f.GetStringValue(), ":")
-
-		if len(data) != 2 {
-			s.c.log.Error(fmt.Errorf("invalid data"), "registryd: invalid data", "data", data)
-			return
-		}
-
-		if ok, err := checkPassword(db, data[0], data[1]); err != nil || !ok {
-			s.c.log.Error(err, "registryd: failed to check password")
-			status["status"] = false
-		}
-
-		ss, err := structpb.NewStruct(status)
-		if err != nil {
-			s.c.log.Error(err, "registryd: failed to marshal status")
-			return
-		}
-
-		res, err := s.c.ipcClient.Publish(ctx, connect.NewRequest(&ipcv1alpha1.PublishRequest{
-			Topic:         recipient,
-			PublisherName: s.c.name,
-			PublisherId:   s.c.id.String(),
-			Data:          []*structpb.Struct{ss},
-		}))
-		if err != nil {
-			s.c.log.Error(err, "registryd: failed to publish response", "topic", recipient)
-			return
-		}
-
-		s.c.log.Info("registryd: published response", "status", res.Msg.Status.String())
+	data, err := proto.Marshal(&umgmtv1alpha1.ListUsersResponse{
+		Users: users,
+	})
+	if err != nil {
+		s.c.log.Error(err, "failed to marshal user list", "service", s.c.name, "uuid", s.c.id.String())
 	}
-}
 
-func (s *Service) checkRoleHelper(ctx context.Context, db *bolt.DB, st *structpb.Struct, recipient string) { //nolint:cyclop
-	if f, ok := st.Fields[user.UserCheckRole]; ok {
-		status := map[string]any{
-			"status": true,
-		}
+	span.End()
 
-		data := strings.Split(f.GetStringValue(), ":")
-
-		if len(data) != 2 {
-			s.c.log.Error(fmt.Errorf("invalid data"), "registryd: invalid data", "data", data)
-			return
-		}
-
-		var role user.Role
-		switch data[1] {
-		case "debug":
-			role = user.RoleDebug
-		case "admin":
-			role = user.RoleAdmin
-		case "user":
-			role = user.RoleUser
-		default:
-			s.c.log.Error(fmt.Errorf("invalid role"), "registryd: invalid role", "role", data[1])
-			return
-		}
-
-		if ok, err := checkRole(db, data[0], role); err != nil || !ok {
-			s.c.log.Error(err, "registryd: failed to check role")
-			status["status"] = false
-		}
-
-		ss, err := structpb.NewStruct(status)
-		if err != nil {
-			s.c.log.Error(err, "registryd: failed to marshal status")
-			return
-		}
-
-		res, err := s.c.ipcClient.Publish(ctx, connect.NewRequest(&ipcv1alpha1.PublishRequest{
-			Topic:         recipient,
-			PublisherName: s.c.name,
-			PublisherId:   s.c.id.String(),
-			Data:          []*structpb.Struct{ss},
-		}))
-		if err != nil {
-			s.c.log.Error(err, "registryd: failed to publish response", "topic", recipient)
-			return
-		}
-
-		s.c.log.Info("registryd: published response", "status", res.Msg.Status.String())
+	if err := req.Respond(data, micro.WithHeaders(micro.Headers(telemetry.HeaderFromContext(ctx)))); err != nil {
+		s.c.log.Error(err, "failed to respond to request")
 	}
 }
