@@ -1,0 +1,69 @@
+syntax = "proto3";
+
+package umgmt.v1alpha1;
+
+option go_package = "umgmt";
+
+import "google/protobuf/field_mask.proto";
+import "google/protobuf/timestamp.proto";
+
+enum SensorType {
+  SENSOR_TYPE_UNSPECIFIED = 0;
+  SENSOR_TYPE_TEMPERATURE = 1;
+  SENSOR_TYPE_FAN = 2;
+  SENSOR_TYPE_VOLTAGE = 3;
+  SENSOR_TYPE_CURRENT = 4;
+  SENSOR_TYPE_POWER = 5;
+  SENSOR_TYPE_ENERGY = 6;
+  SENSOR_TYPE_HUMIDITY = 7;
+  SENSOR_TYPE_AIRFLOW = 8;
+  SENSOR_TYPE_PERCENTAGE = 9;
+  SENSOR_TYPE_CAPACITY = 10;
+  SENSOR_TYPE_FREQUENCY = 11;
+  SENSOR_TYPE_BINARY = 12;
+}
+
+enum MeasurementUnit {
+  MEASUREMENT_UNIT_UNSPECIFIED = 0;
+  MEASUREMENT_UNIT_CELSIUS = 1;
+  MEASUREMENT_UNIT_RPM = 2;
+  MEASUREMENT_UNIT_VOLTS = 3;
+  MEASUREMENT_UNIT_AMPS = 4;
+  MEASUREMENT_UNIT_WATTS = 5;
+  MEASUREMENT_UNIT_JOULES = 6;
+  MEASUREMENT_UNIT_PERCENT = 7;
+  MEASUREMENT_UNIT_CMM = 8;
+  MEASUREMENT_UNIT_HZ = 9;
+  MEASUREMENT_UNIT_RH = 10;
+}
+
+message Threshold {
+  int32 lower_critical = 1;
+  int32 lower_non_critical = 2;
+  int32 upper_non_critical = 3;
+  int32 upper_critical = 4;
+}
+
+message Sensor {
+  string name = 1;
+  SensorType type = 2;
+  MeasurementUnit unit = 3;
+  Threshold threshold = 4;
+  int32 value = 5;
+  string description = 6;
+  google.protobuf.Timestamp updated_at = 7;
+}
+
+enum FanProfile {
+  FAN_PROFILE_UNSPECIFIED = 0;
+  FAN_PROFILE_SILENT = 1;
+  FAN_PROFILE_BALANCED = 2;
+  FAN_PROFILE_PERFORMANCE = 3;
+  FAN_PROFILE_FULL_SPEED = 4;
+}
+
+message ChangeFanProfilesRequest {
+  FanProfile fan_profile = 1;
+}
+
+message ChangeFanProfilesResponse {}

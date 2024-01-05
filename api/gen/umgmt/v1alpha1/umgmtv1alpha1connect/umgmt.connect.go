@@ -18,7 +18,7 @@ import (
 // generated with a version of connect newer than the one compiled into your binary. You can fix the
 // problem by either regenerating this code with an older version of connect or updating the connect
 // version compiled into your binary.
-const _ = connect.IsAtLeastVersion0_1_0
+const _ = connect.IsAtLeastVersion1_13_0
 
 const (
 	// UmgmtServiceName is the fully-qualified name of the UmgmtService service.
@@ -33,56 +33,52 @@ const (
 // reflection-formatted method names, remove the leading slash and convert the remaining slash to a
 // period.
 const (
-	// UmgmtServiceGetUsersProcedure is the fully-qualified name of the UmgmtService's GetUsers RPC.
-	UmgmtServiceGetUsersProcedure = "/umgmt.v1alpha1.UmgmtService/GetUsers"
+	// UmgmtServiceListUsersProcedure is the fully-qualified name of the UmgmtService's ListUsers RPC.
+	UmgmtServiceListUsersProcedure = "/umgmt.v1alpha1.UmgmtService/ListUsers"
 	// UmgmtServiceGetUserInfoProcedure is the fully-qualified name of the UmgmtService's GetUserInfo
 	// RPC.
 	UmgmtServiceGetUserInfoProcedure = "/umgmt.v1alpha1.UmgmtService/GetUserInfo"
 	// UmgmtServiceUpdateUserProcedure is the fully-qualified name of the UmgmtService's UpdateUser RPC.
 	UmgmtServiceUpdateUserProcedure = "/umgmt.v1alpha1.UmgmtService/UpdateUser"
-	// UmgmtServiceGetInventoryProcedure is the fully-qualified name of the UmgmtService's GetInventory
-	// RPC.
-	UmgmtServiceGetInventoryProcedure = "/umgmt.v1alpha1.UmgmtService/GetInventory"
-	// UmgmtServiceGetMachineInfoProcedure is the fully-qualified name of the UmgmtService's
-	// GetMachineInfo RPC.
-	UmgmtServiceGetMachineInfoProcedure = "/umgmt.v1alpha1.UmgmtService/GetMachineInfo"
-	// UmgmtServiceGetMachineStateProcedure is the fully-qualified name of the UmgmtService's
-	// GetMachineState RPC.
-	UmgmtServiceGetMachineStateProcedure = "/umgmt.v1alpha1.UmgmtService/GetMachineState"
-	// UmgmtServiceChangeMachineStateProcedure is the fully-qualified name of the UmgmtService's
-	// ChangeMachineState RPC.
-	UmgmtServiceChangeMachineStateProcedure = "/umgmt.v1alpha1.UmgmtService/ChangeMachineState"
-	// UmgmtServiceGetSensorListProcedure is the fully-qualified name of the UmgmtService's
-	// GetSensorList RPC.
-	UmgmtServiceGetSensorListProcedure = "/umgmt.v1alpha1.UmgmtService/GetSensorList"
-	// UmgmtServiceGetSensorDataProcedure is the fully-qualified name of the UmgmtService's
-	// GetSensorData RPC.
-	UmgmtServiceGetSensorDataProcedure = "/umgmt.v1alpha1.UmgmtService/GetSensorData"
-	// UmgmtServiceStreamHostConsoleProcedure is the fully-qualified name of the UmgmtService's
-	// StreamHostConsole RPC.
-	UmgmtServiceStreamHostConsoleProcedure = "/umgmt.v1alpha1.UmgmtService/StreamHostConsole"
-	// UmgmtServiceConfigureThermalSetPointsProcedure is the fully-qualified name of the UmgmtService's
-	// ConfigureThermalSetPoints RPC.
-	UmgmtServiceConfigureThermalSetPointsProcedure = "/umgmt.v1alpha1.UmgmtService/ConfigureThermalSetPoints"
-	// UmgmtServiceConfigureThermalFanProfilesProcedure is the fully-qualified name of the
-	// UmgmtService's ConfigureThermalFanProfiles RPC.
-	UmgmtServiceConfigureThermalFanProfilesProcedure = "/umgmt.v1alpha1.UmgmtService/ConfigureThermalFanProfiles"
+	// UmgmtServiceDeleteUserProcedure is the fully-qualified name of the UmgmtService's DeleteUser RPC.
+	UmgmtServiceDeleteUserProcedure = "/umgmt.v1alpha1.UmgmtService/DeleteUser"
+	// UmgmtServiceListInventoryProcedure is the fully-qualified name of the UmgmtService's
+	// ListInventory RPC.
+	UmgmtServiceListInventoryProcedure = "/umgmt.v1alpha1.UmgmtService/ListInventory"
+	// UmgmtServiceGetChassisInfoProcedure is the fully-qualified name of the UmgmtService's
+	// GetChassisInfo RPC.
+	UmgmtServiceGetChassisInfoProcedure = "/umgmt.v1alpha1.UmgmtService/GetChassisInfo"
+	// UmgmtServiceChangeSystemStateProcedure is the fully-qualified name of the UmgmtService's
+	// ChangeSystemState RPC.
+	UmgmtServiceChangeSystemStateProcedure = "/umgmt.v1alpha1.UmgmtService/ChangeSystemState"
+	// UmgmtServiceStreamConsoleProcedure is the fully-qualified name of the UmgmtService's
+	// StreamConsole RPC.
+	UmgmtServiceStreamConsoleProcedure = "/umgmt.v1alpha1.UmgmtService/StreamConsole"
+)
+
+// These variables are the protoreflect.Descriptor objects for the RPCs defined in this package.
+var (
+	umgmtServiceServiceDescriptor                 = v1alpha1.File_umgmt_v1alpha1_umgmt_proto.Services().ByName("UmgmtService")
+	umgmtServiceListUsersMethodDescriptor         = umgmtServiceServiceDescriptor.Methods().ByName("ListUsers")
+	umgmtServiceGetUserInfoMethodDescriptor       = umgmtServiceServiceDescriptor.Methods().ByName("GetUserInfo")
+	umgmtServiceUpdateUserMethodDescriptor        = umgmtServiceServiceDescriptor.Methods().ByName("UpdateUser")
+	umgmtServiceDeleteUserMethodDescriptor        = umgmtServiceServiceDescriptor.Methods().ByName("DeleteUser")
+	umgmtServiceListInventoryMethodDescriptor     = umgmtServiceServiceDescriptor.Methods().ByName("ListInventory")
+	umgmtServiceGetChassisInfoMethodDescriptor    = umgmtServiceServiceDescriptor.Methods().ByName("GetChassisInfo")
+	umgmtServiceChangeSystemStateMethodDescriptor = umgmtServiceServiceDescriptor.Methods().ByName("ChangeSystemState")
+	umgmtServiceStreamConsoleMethodDescriptor     = umgmtServiceServiceDescriptor.Methods().ByName("StreamConsole")
 )
 
 // UmgmtServiceClient is a client for the umgmt.v1alpha1.UmgmtService service.
 type UmgmtServiceClient interface {
-	GetUsers(context.Context, *connect.Request[v1alpha1.GetUsersRequest]) (*connect.Response[v1alpha1.GetUsersResponse], error)
+	ListUsers(context.Context, *connect.Request[v1alpha1.ListUsersRequest]) (*connect.Response[v1alpha1.ListUsersResponse], error)
 	GetUserInfo(context.Context, *connect.Request[v1alpha1.GetUserInfoRequest]) (*connect.Response[v1alpha1.GetUserInfoResponse], error)
 	UpdateUser(context.Context, *connect.Request[v1alpha1.UpdateUserRequest]) (*connect.Response[v1alpha1.UpdateUserResponse], error)
-	GetInventory(context.Context, *connect.Request[v1alpha1.GetInventoryRequest]) (*connect.Response[v1alpha1.GetInventoryResponse], error)
-	GetMachineInfo(context.Context, *connect.Request[v1alpha1.GetMachineInfoRequest]) (*connect.Response[v1alpha1.GetMachineInfoResponse], error)
-	GetMachineState(context.Context, *connect.Request[v1alpha1.GetMachineStateRequest]) (*connect.Response[v1alpha1.GetMachineStateResponse], error)
-	ChangeMachineState(context.Context, *connect.Request[v1alpha1.ChangeMachineStateRequest]) (*connect.Response[v1alpha1.ChangeMachineStateResponse], error)
-	GetSensorList(context.Context, *connect.Request[v1alpha1.GetSensorListRequest]) (*connect.Response[v1alpha1.GetSensorListResponse], error)
-	GetSensorData(context.Context, *connect.Request[v1alpha1.GetSensorDataRequest]) (*connect.Response[v1alpha1.GetSensorDataResponse], error)
-	StreamHostConsole(context.Context) *connect.BidiStreamForClient[v1alpha1.StreamHostConsoleRequest, v1alpha1.StreamHostConsoleResponse]
-	ConfigureThermalSetPoints(context.Context, *connect.Request[v1alpha1.ConfigureThermalSetPointsRequest]) (*connect.Response[v1alpha1.ConfigureThermalSetPointsResponse], error)
-	ConfigureThermalFanProfiles(context.Context, *connect.Request[v1alpha1.ConfigureThermalFanProfilesRequest]) (*connect.Response[v1alpha1.ConfigureThermalFanProfilesResponse], error)
+	DeleteUser(context.Context, *connect.Request[v1alpha1.DeleteUserRequest]) (*connect.Response[v1alpha1.DeleteUserResponse], error)
+	ListInventory(context.Context, *connect.Request[v1alpha1.ListInventoryRequest]) (*connect.Response[v1alpha1.ListInventoryResponse], error)
+	GetChassisInfo(context.Context, *connect.Request[v1alpha1.GetChassisInfoRequest]) (*connect.Response[v1alpha1.GetChassisInfoResponse], error)
+	ChangeSystemState(context.Context, *connect.Request[v1alpha1.ChangeSystemStateRequest]) (*connect.Response[v1alpha1.ChangeSystemStateResponse], error)
+	StreamConsole(context.Context) *connect.BidiStreamForClient[v1alpha1.StreamConsoleRequest, v1alpha1.StreamConsoleResponse]
 }
 
 // NewUmgmtServiceClient constructs a client for the umgmt.v1alpha1.UmgmtService service. By
@@ -95,88 +91,72 @@ type UmgmtServiceClient interface {
 func NewUmgmtServiceClient(httpClient connect.HTTPClient, baseURL string, opts ...connect.ClientOption) UmgmtServiceClient {
 	baseURL = strings.TrimRight(baseURL, "/")
 	return &umgmtServiceClient{
-		getUsers: connect.NewClient[v1alpha1.GetUsersRequest, v1alpha1.GetUsersResponse](
+		listUsers: connect.NewClient[v1alpha1.ListUsersRequest, v1alpha1.ListUsersResponse](
 			httpClient,
-			baseURL+UmgmtServiceGetUsersProcedure,
-			opts...,
+			baseURL+UmgmtServiceListUsersProcedure,
+			connect.WithSchema(umgmtServiceListUsersMethodDescriptor),
+			connect.WithClientOptions(opts...),
 		),
 		getUserInfo: connect.NewClient[v1alpha1.GetUserInfoRequest, v1alpha1.GetUserInfoResponse](
 			httpClient,
 			baseURL+UmgmtServiceGetUserInfoProcedure,
-			opts...,
+			connect.WithSchema(umgmtServiceGetUserInfoMethodDescriptor),
+			connect.WithClientOptions(opts...),
 		),
 		updateUser: connect.NewClient[v1alpha1.UpdateUserRequest, v1alpha1.UpdateUserResponse](
 			httpClient,
 			baseURL+UmgmtServiceUpdateUserProcedure,
-			opts...,
+			connect.WithSchema(umgmtServiceUpdateUserMethodDescriptor),
+			connect.WithClientOptions(opts...),
 		),
-		getInventory: connect.NewClient[v1alpha1.GetInventoryRequest, v1alpha1.GetInventoryResponse](
+		deleteUser: connect.NewClient[v1alpha1.DeleteUserRequest, v1alpha1.DeleteUserResponse](
 			httpClient,
-			baseURL+UmgmtServiceGetInventoryProcedure,
-			opts...,
+			baseURL+UmgmtServiceDeleteUserProcedure,
+			connect.WithSchema(umgmtServiceDeleteUserMethodDescriptor),
+			connect.WithClientOptions(opts...),
 		),
-		getMachineInfo: connect.NewClient[v1alpha1.GetMachineInfoRequest, v1alpha1.GetMachineInfoResponse](
+		listInventory: connect.NewClient[v1alpha1.ListInventoryRequest, v1alpha1.ListInventoryResponse](
 			httpClient,
-			baseURL+UmgmtServiceGetMachineInfoProcedure,
-			opts...,
+			baseURL+UmgmtServiceListInventoryProcedure,
+			connect.WithSchema(umgmtServiceListInventoryMethodDescriptor),
+			connect.WithClientOptions(opts...),
 		),
-		getMachineState: connect.NewClient[v1alpha1.GetMachineStateRequest, v1alpha1.GetMachineStateResponse](
+		getChassisInfo: connect.NewClient[v1alpha1.GetChassisInfoRequest, v1alpha1.GetChassisInfoResponse](
 			httpClient,
-			baseURL+UmgmtServiceGetMachineStateProcedure,
-			opts...,
+			baseURL+UmgmtServiceGetChassisInfoProcedure,
+			connect.WithSchema(umgmtServiceGetChassisInfoMethodDescriptor),
+			connect.WithClientOptions(opts...),
 		),
-		changeMachineState: connect.NewClient[v1alpha1.ChangeMachineStateRequest, v1alpha1.ChangeMachineStateResponse](
+		changeSystemState: connect.NewClient[v1alpha1.ChangeSystemStateRequest, v1alpha1.ChangeSystemStateResponse](
 			httpClient,
-			baseURL+UmgmtServiceChangeMachineStateProcedure,
-			opts...,
+			baseURL+UmgmtServiceChangeSystemStateProcedure,
+			connect.WithSchema(umgmtServiceChangeSystemStateMethodDescriptor),
+			connect.WithClientOptions(opts...),
 		),
-		getSensorList: connect.NewClient[v1alpha1.GetSensorListRequest, v1alpha1.GetSensorListResponse](
+		streamConsole: connect.NewClient[v1alpha1.StreamConsoleRequest, v1alpha1.StreamConsoleResponse](
 			httpClient,
-			baseURL+UmgmtServiceGetSensorListProcedure,
-			opts...,
-		),
-		getSensorData: connect.NewClient[v1alpha1.GetSensorDataRequest, v1alpha1.GetSensorDataResponse](
-			httpClient,
-			baseURL+UmgmtServiceGetSensorDataProcedure,
-			opts...,
-		),
-		streamHostConsole: connect.NewClient[v1alpha1.StreamHostConsoleRequest, v1alpha1.StreamHostConsoleResponse](
-			httpClient,
-			baseURL+UmgmtServiceStreamHostConsoleProcedure,
-			opts...,
-		),
-		configureThermalSetPoints: connect.NewClient[v1alpha1.ConfigureThermalSetPointsRequest, v1alpha1.ConfigureThermalSetPointsResponse](
-			httpClient,
-			baseURL+UmgmtServiceConfigureThermalSetPointsProcedure,
-			opts...,
-		),
-		configureThermalFanProfiles: connect.NewClient[v1alpha1.ConfigureThermalFanProfilesRequest, v1alpha1.ConfigureThermalFanProfilesResponse](
-			httpClient,
-			baseURL+UmgmtServiceConfigureThermalFanProfilesProcedure,
-			opts...,
+			baseURL+UmgmtServiceStreamConsoleProcedure,
+			connect.WithSchema(umgmtServiceStreamConsoleMethodDescriptor),
+			connect.WithClientOptions(opts...),
 		),
 	}
 }
 
 // umgmtServiceClient implements UmgmtServiceClient.
 type umgmtServiceClient struct {
-	getUsers                    *connect.Client[v1alpha1.GetUsersRequest, v1alpha1.GetUsersResponse]
-	getUserInfo                 *connect.Client[v1alpha1.GetUserInfoRequest, v1alpha1.GetUserInfoResponse]
-	updateUser                  *connect.Client[v1alpha1.UpdateUserRequest, v1alpha1.UpdateUserResponse]
-	getInventory                *connect.Client[v1alpha1.GetInventoryRequest, v1alpha1.GetInventoryResponse]
-	getMachineInfo              *connect.Client[v1alpha1.GetMachineInfoRequest, v1alpha1.GetMachineInfoResponse]
-	getMachineState             *connect.Client[v1alpha1.GetMachineStateRequest, v1alpha1.GetMachineStateResponse]
-	changeMachineState          *connect.Client[v1alpha1.ChangeMachineStateRequest, v1alpha1.ChangeMachineStateResponse]
-	getSensorList               *connect.Client[v1alpha1.GetSensorListRequest, v1alpha1.GetSensorListResponse]
-	getSensorData               *connect.Client[v1alpha1.GetSensorDataRequest, v1alpha1.GetSensorDataResponse]
-	streamHostConsole           *connect.Client[v1alpha1.StreamHostConsoleRequest, v1alpha1.StreamHostConsoleResponse]
-	configureThermalSetPoints   *connect.Client[v1alpha1.ConfigureThermalSetPointsRequest, v1alpha1.ConfigureThermalSetPointsResponse]
-	configureThermalFanProfiles *connect.Client[v1alpha1.ConfigureThermalFanProfilesRequest, v1alpha1.ConfigureThermalFanProfilesResponse]
+	listUsers         *connect.Client[v1alpha1.ListUsersRequest, v1alpha1.ListUsersResponse]
+	getUserInfo       *connect.Client[v1alpha1.GetUserInfoRequest, v1alpha1.GetUserInfoResponse]
+	updateUser        *connect.Client[v1alpha1.UpdateUserRequest, v1alpha1.UpdateUserResponse]
+	deleteUser        *connect.Client[v1alpha1.DeleteUserRequest, v1alpha1.DeleteUserResponse]
+	listInventory     *connect.Client[v1alpha1.ListInventoryRequest, v1alpha1.ListInventoryResponse]
+	getChassisInfo    *connect.Client[v1alpha1.GetChassisInfoRequest, v1alpha1.GetChassisInfoResponse]
+	changeSystemState *connect.Client[v1alpha1.ChangeSystemStateRequest, v1alpha1.ChangeSystemStateResponse]
+	streamConsole     *connect.Client[v1alpha1.StreamConsoleRequest, v1alpha1.StreamConsoleResponse]
 }
 
-// GetUsers calls umgmt.v1alpha1.UmgmtService.GetUsers.
-func (c *umgmtServiceClient) GetUsers(ctx context.Context, req *connect.Request[v1alpha1.GetUsersRequest]) (*connect.Response[v1alpha1.GetUsersResponse], error) {
-	return c.getUsers.CallUnary(ctx, req)
+// ListUsers calls umgmt.v1alpha1.UmgmtService.ListUsers.
+func (c *umgmtServiceClient) ListUsers(ctx context.Context, req *connect.Request[v1alpha1.ListUsersRequest]) (*connect.Response[v1alpha1.ListUsersResponse], error) {
+	return c.listUsers.CallUnary(ctx, req)
 }
 
 // GetUserInfo calls umgmt.v1alpha1.UmgmtService.GetUserInfo.
@@ -189,65 +169,41 @@ func (c *umgmtServiceClient) UpdateUser(ctx context.Context, req *connect.Reques
 	return c.updateUser.CallUnary(ctx, req)
 }
 
-// GetInventory calls umgmt.v1alpha1.UmgmtService.GetInventory.
-func (c *umgmtServiceClient) GetInventory(ctx context.Context, req *connect.Request[v1alpha1.GetInventoryRequest]) (*connect.Response[v1alpha1.GetInventoryResponse], error) {
-	return c.getInventory.CallUnary(ctx, req)
+// DeleteUser calls umgmt.v1alpha1.UmgmtService.DeleteUser.
+func (c *umgmtServiceClient) DeleteUser(ctx context.Context, req *connect.Request[v1alpha1.DeleteUserRequest]) (*connect.Response[v1alpha1.DeleteUserResponse], error) {
+	return c.deleteUser.CallUnary(ctx, req)
 }
 
-// GetMachineInfo calls umgmt.v1alpha1.UmgmtService.GetMachineInfo.
-func (c *umgmtServiceClient) GetMachineInfo(ctx context.Context, req *connect.Request[v1alpha1.GetMachineInfoRequest]) (*connect.Response[v1alpha1.GetMachineInfoResponse], error) {
-	return c.getMachineInfo.CallUnary(ctx, req)
+// ListInventory calls umgmt.v1alpha1.UmgmtService.ListInventory.
+func (c *umgmtServiceClient) ListInventory(ctx context.Context, req *connect.Request[v1alpha1.ListInventoryRequest]) (*connect.Response[v1alpha1.ListInventoryResponse], error) {
+	return c.listInventory.CallUnary(ctx, req)
 }
 
-// GetMachineState calls umgmt.v1alpha1.UmgmtService.GetMachineState.
-func (c *umgmtServiceClient) GetMachineState(ctx context.Context, req *connect.Request[v1alpha1.GetMachineStateRequest]) (*connect.Response[v1alpha1.GetMachineStateResponse], error) {
-	return c.getMachineState.CallUnary(ctx, req)
+// GetChassisInfo calls umgmt.v1alpha1.UmgmtService.GetChassisInfo.
+func (c *umgmtServiceClient) GetChassisInfo(ctx context.Context, req *connect.Request[v1alpha1.GetChassisInfoRequest]) (*connect.Response[v1alpha1.GetChassisInfoResponse], error) {
+	return c.getChassisInfo.CallUnary(ctx, req)
 }
 
-// ChangeMachineState calls umgmt.v1alpha1.UmgmtService.ChangeMachineState.
-func (c *umgmtServiceClient) ChangeMachineState(ctx context.Context, req *connect.Request[v1alpha1.ChangeMachineStateRequest]) (*connect.Response[v1alpha1.ChangeMachineStateResponse], error) {
-	return c.changeMachineState.CallUnary(ctx, req)
+// ChangeSystemState calls umgmt.v1alpha1.UmgmtService.ChangeSystemState.
+func (c *umgmtServiceClient) ChangeSystemState(ctx context.Context, req *connect.Request[v1alpha1.ChangeSystemStateRequest]) (*connect.Response[v1alpha1.ChangeSystemStateResponse], error) {
+	return c.changeSystemState.CallUnary(ctx, req)
 }
 
-// GetSensorList calls umgmt.v1alpha1.UmgmtService.GetSensorList.
-func (c *umgmtServiceClient) GetSensorList(ctx context.Context, req *connect.Request[v1alpha1.GetSensorListRequest]) (*connect.Response[v1alpha1.GetSensorListResponse], error) {
-	return c.getSensorList.CallUnary(ctx, req)
-}
-
-// GetSensorData calls umgmt.v1alpha1.UmgmtService.GetSensorData.
-func (c *umgmtServiceClient) GetSensorData(ctx context.Context, req *connect.Request[v1alpha1.GetSensorDataRequest]) (*connect.Response[v1alpha1.GetSensorDataResponse], error) {
-	return c.getSensorData.CallUnary(ctx, req)
-}
-
-// StreamHostConsole calls umgmt.v1alpha1.UmgmtService.StreamHostConsole.
-func (c *umgmtServiceClient) StreamHostConsole(ctx context.Context) *connect.BidiStreamForClient[v1alpha1.StreamHostConsoleRequest, v1alpha1.StreamHostConsoleResponse] {
-	return c.streamHostConsole.CallBidiStream(ctx)
-}
-
-// ConfigureThermalSetPoints calls umgmt.v1alpha1.UmgmtService.ConfigureThermalSetPoints.
-func (c *umgmtServiceClient) ConfigureThermalSetPoints(ctx context.Context, req *connect.Request[v1alpha1.ConfigureThermalSetPointsRequest]) (*connect.Response[v1alpha1.ConfigureThermalSetPointsResponse], error) {
-	return c.configureThermalSetPoints.CallUnary(ctx, req)
-}
-
-// ConfigureThermalFanProfiles calls umgmt.v1alpha1.UmgmtService.ConfigureThermalFanProfiles.
-func (c *umgmtServiceClient) ConfigureThermalFanProfiles(ctx context.Context, req *connect.Request[v1alpha1.ConfigureThermalFanProfilesRequest]) (*connect.Response[v1alpha1.ConfigureThermalFanProfilesResponse], error) {
-	return c.configureThermalFanProfiles.CallUnary(ctx, req)
+// StreamConsole calls umgmt.v1alpha1.UmgmtService.StreamConsole.
+func (c *umgmtServiceClient) StreamConsole(ctx context.Context) *connect.BidiStreamForClient[v1alpha1.StreamConsoleRequest, v1alpha1.StreamConsoleResponse] {
+	return c.streamConsole.CallBidiStream(ctx)
 }
 
 // UmgmtServiceHandler is an implementation of the umgmt.v1alpha1.UmgmtService service.
 type UmgmtServiceHandler interface {
-	GetUsers(context.Context, *connect.Request[v1alpha1.GetUsersRequest]) (*connect.Response[v1alpha1.GetUsersResponse], error)
+	ListUsers(context.Context, *connect.Request[v1alpha1.ListUsersRequest]) (*connect.Response[v1alpha1.ListUsersResponse], error)
 	GetUserInfo(context.Context, *connect.Request[v1alpha1.GetUserInfoRequest]) (*connect.Response[v1alpha1.GetUserInfoResponse], error)
 	UpdateUser(context.Context, *connect.Request[v1alpha1.UpdateUserRequest]) (*connect.Response[v1alpha1.UpdateUserResponse], error)
-	GetInventory(context.Context, *connect.Request[v1alpha1.GetInventoryRequest]) (*connect.Response[v1alpha1.GetInventoryResponse], error)
-	GetMachineInfo(context.Context, *connect.Request[v1alpha1.GetMachineInfoRequest]) (*connect.Response[v1alpha1.GetMachineInfoResponse], error)
-	GetMachineState(context.Context, *connect.Request[v1alpha1.GetMachineStateRequest]) (*connect.Response[v1alpha1.GetMachineStateResponse], error)
-	ChangeMachineState(context.Context, *connect.Request[v1alpha1.ChangeMachineStateRequest]) (*connect.Response[v1alpha1.ChangeMachineStateResponse], error)
-	GetSensorList(context.Context, *connect.Request[v1alpha1.GetSensorListRequest]) (*connect.Response[v1alpha1.GetSensorListResponse], error)
-	GetSensorData(context.Context, *connect.Request[v1alpha1.GetSensorDataRequest]) (*connect.Response[v1alpha1.GetSensorDataResponse], error)
-	StreamHostConsole(context.Context, *connect.BidiStream[v1alpha1.StreamHostConsoleRequest, v1alpha1.StreamHostConsoleResponse]) error
-	ConfigureThermalSetPoints(context.Context, *connect.Request[v1alpha1.ConfigureThermalSetPointsRequest]) (*connect.Response[v1alpha1.ConfigureThermalSetPointsResponse], error)
-	ConfigureThermalFanProfiles(context.Context, *connect.Request[v1alpha1.ConfigureThermalFanProfilesRequest]) (*connect.Response[v1alpha1.ConfigureThermalFanProfilesResponse], error)
+	DeleteUser(context.Context, *connect.Request[v1alpha1.DeleteUserRequest]) (*connect.Response[v1alpha1.DeleteUserResponse], error)
+	ListInventory(context.Context, *connect.Request[v1alpha1.ListInventoryRequest]) (*connect.Response[v1alpha1.ListInventoryResponse], error)
+	GetChassisInfo(context.Context, *connect.Request[v1alpha1.GetChassisInfoRequest]) (*connect.Response[v1alpha1.GetChassisInfoResponse], error)
+	ChangeSystemState(context.Context, *connect.Request[v1alpha1.ChangeSystemStateRequest]) (*connect.Response[v1alpha1.ChangeSystemStateResponse], error)
+	StreamConsole(context.Context, *connect.BidiStream[v1alpha1.StreamConsoleRequest, v1alpha1.StreamConsoleResponse]) error
 }
 
 // NewUmgmtServiceHandler builds an HTTP handler from the service implementation. It returns the
@@ -256,92 +212,72 @@ type UmgmtServiceHandler interface {
 // By default, handlers support the Connect, gRPC, and gRPC-Web protocols with the binary Protobuf
 // and JSON codecs. They also support gzip compression.
 func NewUmgmtServiceHandler(svc UmgmtServiceHandler, opts ...connect.HandlerOption) (string, http.Handler) {
-	umgmtServiceGetUsersHandler := connect.NewUnaryHandler(
-		UmgmtServiceGetUsersProcedure,
-		svc.GetUsers,
-		opts...,
+	umgmtServiceListUsersHandler := connect.NewUnaryHandler(
+		UmgmtServiceListUsersProcedure,
+		svc.ListUsers,
+		connect.WithSchema(umgmtServiceListUsersMethodDescriptor),
+		connect.WithHandlerOptions(opts...),
 	)
 	umgmtServiceGetUserInfoHandler := connect.NewUnaryHandler(
 		UmgmtServiceGetUserInfoProcedure,
 		svc.GetUserInfo,
-		opts...,
+		connect.WithSchema(umgmtServiceGetUserInfoMethodDescriptor),
+		connect.WithHandlerOptions(opts...),
 	)
 	umgmtServiceUpdateUserHandler := connect.NewUnaryHandler(
 		UmgmtServiceUpdateUserProcedure,
 		svc.UpdateUser,
-		opts...,
+		connect.WithSchema(umgmtServiceUpdateUserMethodDescriptor),
+		connect.WithHandlerOptions(opts...),
 	)
-	umgmtServiceGetInventoryHandler := connect.NewUnaryHandler(
-		UmgmtServiceGetInventoryProcedure,
-		svc.GetInventory,
-		opts...,
+	umgmtServiceDeleteUserHandler := connect.NewUnaryHandler(
+		UmgmtServiceDeleteUserProcedure,
+		svc.DeleteUser,
+		connect.WithSchema(umgmtServiceDeleteUserMethodDescriptor),
+		connect.WithHandlerOptions(opts...),
 	)
-	umgmtServiceGetMachineInfoHandler := connect.NewUnaryHandler(
-		UmgmtServiceGetMachineInfoProcedure,
-		svc.GetMachineInfo,
-		opts...,
+	umgmtServiceListInventoryHandler := connect.NewUnaryHandler(
+		UmgmtServiceListInventoryProcedure,
+		svc.ListInventory,
+		connect.WithSchema(umgmtServiceListInventoryMethodDescriptor),
+		connect.WithHandlerOptions(opts...),
 	)
-	umgmtServiceGetMachineStateHandler := connect.NewUnaryHandler(
-		UmgmtServiceGetMachineStateProcedure,
-		svc.GetMachineState,
-		opts...,
+	umgmtServiceGetChassisInfoHandler := connect.NewUnaryHandler(
+		UmgmtServiceGetChassisInfoProcedure,
+		svc.GetChassisInfo,
+		connect.WithSchema(umgmtServiceGetChassisInfoMethodDescriptor),
+		connect.WithHandlerOptions(opts...),
 	)
-	umgmtServiceChangeMachineStateHandler := connect.NewUnaryHandler(
-		UmgmtServiceChangeMachineStateProcedure,
-		svc.ChangeMachineState,
-		opts...,
+	umgmtServiceChangeSystemStateHandler := connect.NewUnaryHandler(
+		UmgmtServiceChangeSystemStateProcedure,
+		svc.ChangeSystemState,
+		connect.WithSchema(umgmtServiceChangeSystemStateMethodDescriptor),
+		connect.WithHandlerOptions(opts...),
 	)
-	umgmtServiceGetSensorListHandler := connect.NewUnaryHandler(
-		UmgmtServiceGetSensorListProcedure,
-		svc.GetSensorList,
-		opts...,
-	)
-	umgmtServiceGetSensorDataHandler := connect.NewUnaryHandler(
-		UmgmtServiceGetSensorDataProcedure,
-		svc.GetSensorData,
-		opts...,
-	)
-	umgmtServiceStreamHostConsoleHandler := connect.NewBidiStreamHandler(
-		UmgmtServiceStreamHostConsoleProcedure,
-		svc.StreamHostConsole,
-		opts...,
-	)
-	umgmtServiceConfigureThermalSetPointsHandler := connect.NewUnaryHandler(
-		UmgmtServiceConfigureThermalSetPointsProcedure,
-		svc.ConfigureThermalSetPoints,
-		opts...,
-	)
-	umgmtServiceConfigureThermalFanProfilesHandler := connect.NewUnaryHandler(
-		UmgmtServiceConfigureThermalFanProfilesProcedure,
-		svc.ConfigureThermalFanProfiles,
-		opts...,
+	umgmtServiceStreamConsoleHandler := connect.NewBidiStreamHandler(
+		UmgmtServiceStreamConsoleProcedure,
+		svc.StreamConsole,
+		connect.WithSchema(umgmtServiceStreamConsoleMethodDescriptor),
+		connect.WithHandlerOptions(opts...),
 	)
 	return "/umgmt.v1alpha1.UmgmtService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
-		case UmgmtServiceGetUsersProcedure:
-			umgmtServiceGetUsersHandler.ServeHTTP(w, r)
+		case UmgmtServiceListUsersProcedure:
+			umgmtServiceListUsersHandler.ServeHTTP(w, r)
 		case UmgmtServiceGetUserInfoProcedure:
 			umgmtServiceGetUserInfoHandler.ServeHTTP(w, r)
 		case UmgmtServiceUpdateUserProcedure:
 			umgmtServiceUpdateUserHandler.ServeHTTP(w, r)
-		case UmgmtServiceGetInventoryProcedure:
-			umgmtServiceGetInventoryHandler.ServeHTTP(w, r)
-		case UmgmtServiceGetMachineInfoProcedure:
-			umgmtServiceGetMachineInfoHandler.ServeHTTP(w, r)
-		case UmgmtServiceGetMachineStateProcedure:
-			umgmtServiceGetMachineStateHandler.ServeHTTP(w, r)
-		case UmgmtServiceChangeMachineStateProcedure:
-			umgmtServiceChangeMachineStateHandler.ServeHTTP(w, r)
-		case UmgmtServiceGetSensorListProcedure:
-			umgmtServiceGetSensorListHandler.ServeHTTP(w, r)
-		case UmgmtServiceGetSensorDataProcedure:
-			umgmtServiceGetSensorDataHandler.ServeHTTP(w, r)
-		case UmgmtServiceStreamHostConsoleProcedure:
-			umgmtServiceStreamHostConsoleHandler.ServeHTTP(w, r)
-		case UmgmtServiceConfigureThermalSetPointsProcedure:
-			umgmtServiceConfigureThermalSetPointsHandler.ServeHTTP(w, r)
-		case UmgmtServiceConfigureThermalFanProfilesProcedure:
-			umgmtServiceConfigureThermalFanProfilesHandler.ServeHTTP(w, r)
+		case UmgmtServiceDeleteUserProcedure:
+			umgmtServiceDeleteUserHandler.ServeHTTP(w, r)
+		case UmgmtServiceListInventoryProcedure:
+			umgmtServiceListInventoryHandler.ServeHTTP(w, r)
+		case UmgmtServiceGetChassisInfoProcedure:
+			umgmtServiceGetChassisInfoHandler.ServeHTTP(w, r)
+		case UmgmtServiceChangeSystemStateProcedure:
+			umgmtServiceChangeSystemStateHandler.ServeHTTP(w, r)
+		case UmgmtServiceStreamConsoleProcedure:
+			umgmtServiceStreamConsoleHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -351,8 +287,8 @@ func NewUmgmtServiceHandler(svc UmgmtServiceHandler, opts ...connect.HandlerOpti
 // UnimplementedUmgmtServiceHandler returns CodeUnimplemented from all methods.
 type UnimplementedUmgmtServiceHandler struct{}
 
-func (UnimplementedUmgmtServiceHandler) GetUsers(context.Context, *connect.Request[v1alpha1.GetUsersRequest]) (*connect.Response[v1alpha1.GetUsersResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("umgmt.v1alpha1.UmgmtService.GetUsers is not implemented"))
+func (UnimplementedUmgmtServiceHandler) ListUsers(context.Context, *connect.Request[v1alpha1.ListUsersRequest]) (*connect.Response[v1alpha1.ListUsersResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("umgmt.v1alpha1.UmgmtService.ListUsers is not implemented"))
 }
 
 func (UnimplementedUmgmtServiceHandler) GetUserInfo(context.Context, *connect.Request[v1alpha1.GetUserInfoRequest]) (*connect.Response[v1alpha1.GetUserInfoResponse], error) {
@@ -363,38 +299,22 @@ func (UnimplementedUmgmtServiceHandler) UpdateUser(context.Context, *connect.Req
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("umgmt.v1alpha1.UmgmtService.UpdateUser is not implemented"))
 }
 
-func (UnimplementedUmgmtServiceHandler) GetInventory(context.Context, *connect.Request[v1alpha1.GetInventoryRequest]) (*connect.Response[v1alpha1.GetInventoryResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("umgmt.v1alpha1.UmgmtService.GetInventory is not implemented"))
+func (UnimplementedUmgmtServiceHandler) DeleteUser(context.Context, *connect.Request[v1alpha1.DeleteUserRequest]) (*connect.Response[v1alpha1.DeleteUserResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("umgmt.v1alpha1.UmgmtService.DeleteUser is not implemented"))
 }
 
-func (UnimplementedUmgmtServiceHandler) GetMachineInfo(context.Context, *connect.Request[v1alpha1.GetMachineInfoRequest]) (*connect.Response[v1alpha1.GetMachineInfoResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("umgmt.v1alpha1.UmgmtService.GetMachineInfo is not implemented"))
+func (UnimplementedUmgmtServiceHandler) ListInventory(context.Context, *connect.Request[v1alpha1.ListInventoryRequest]) (*connect.Response[v1alpha1.ListInventoryResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("umgmt.v1alpha1.UmgmtService.ListInventory is not implemented"))
 }
 
-func (UnimplementedUmgmtServiceHandler) GetMachineState(context.Context, *connect.Request[v1alpha1.GetMachineStateRequest]) (*connect.Response[v1alpha1.GetMachineStateResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("umgmt.v1alpha1.UmgmtService.GetMachineState is not implemented"))
+func (UnimplementedUmgmtServiceHandler) GetChassisInfo(context.Context, *connect.Request[v1alpha1.GetChassisInfoRequest]) (*connect.Response[v1alpha1.GetChassisInfoResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("umgmt.v1alpha1.UmgmtService.GetChassisInfo is not implemented"))
 }
 
-func (UnimplementedUmgmtServiceHandler) ChangeMachineState(context.Context, *connect.Request[v1alpha1.ChangeMachineStateRequest]) (*connect.Response[v1alpha1.ChangeMachineStateResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("umgmt.v1alpha1.UmgmtService.ChangeMachineState is not implemented"))
+func (UnimplementedUmgmtServiceHandler) ChangeSystemState(context.Context, *connect.Request[v1alpha1.ChangeSystemStateRequest]) (*connect.Response[v1alpha1.ChangeSystemStateResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("umgmt.v1alpha1.UmgmtService.ChangeSystemState is not implemented"))
 }
 
-func (UnimplementedUmgmtServiceHandler) GetSensorList(context.Context, *connect.Request[v1alpha1.GetSensorListRequest]) (*connect.Response[v1alpha1.GetSensorListResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("umgmt.v1alpha1.UmgmtService.GetSensorList is not implemented"))
-}
-
-func (UnimplementedUmgmtServiceHandler) GetSensorData(context.Context, *connect.Request[v1alpha1.GetSensorDataRequest]) (*connect.Response[v1alpha1.GetSensorDataResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("umgmt.v1alpha1.UmgmtService.GetSensorData is not implemented"))
-}
-
-func (UnimplementedUmgmtServiceHandler) StreamHostConsole(context.Context, *connect.BidiStream[v1alpha1.StreamHostConsoleRequest, v1alpha1.StreamHostConsoleResponse]) error {
-	return connect.NewError(connect.CodeUnimplemented, errors.New("umgmt.v1alpha1.UmgmtService.StreamHostConsole is not implemented"))
-}
-
-func (UnimplementedUmgmtServiceHandler) ConfigureThermalSetPoints(context.Context, *connect.Request[v1alpha1.ConfigureThermalSetPointsRequest]) (*connect.Response[v1alpha1.ConfigureThermalSetPointsResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("umgmt.v1alpha1.UmgmtService.ConfigureThermalSetPoints is not implemented"))
-}
-
-func (UnimplementedUmgmtServiceHandler) ConfigureThermalFanProfiles(context.Context, *connect.Request[v1alpha1.ConfigureThermalFanProfilesRequest]) (*connect.Response[v1alpha1.ConfigureThermalFanProfilesResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("umgmt.v1alpha1.UmgmtService.ConfigureThermalFanProfiles is not implemented"))
+func (UnimplementedUmgmtServiceHandler) StreamConsole(context.Context, *connect.BidiStream[v1alpha1.StreamConsoleRequest, v1alpha1.StreamConsoleResponse]) error {
+	return connect.NewError(connect.CodeUnimplemented, errors.New("umgmt.v1alpha1.UmgmtService.StreamConsole is not implemented"))
 }

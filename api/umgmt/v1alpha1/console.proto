@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+package umgmt.v1alpha1;
+
+option go_package = "umgmt";
+
+message StreamConsoleRequest {
+  string id = 1;
+  bytes data = 2;
+}
+
+message StreamConsoleResponse {
+  bytes data = 1;
+}

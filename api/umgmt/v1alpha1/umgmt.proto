@@ -4,12 +4,14 @@ package umgmt.v1alpha1;
 
 option go_package = "umgmt";
 
-import "buf/validate/validate.proto";
-import "google/protobuf/timestamp.proto";
 import "google/api/annotations.proto";
+import "umgmt/v1alpha1/console.proto";
+import "umgmt/v1alpha1/inventory.proto";
+import "umgmt/v1alpha1/sensor.proto";
+import "umgmt/v1alpha1/user.proto";
 
 service UmgmtService {
-  rpc GetUsers(GetUsersRequest) returns (GetUsersResponse) {
+  rpc ListUsers(ListUsersRequest) returns (ListUsersResponse) {
     option (google.api.http) = {
       get: "/umgmt/v1alpha1/user"
     };
@@ -17,253 +19,41 @@ service UmgmtService {
 
   rpc GetUserInfo(GetUserInfoRequest) returns (GetUserInfoResponse) {
     option (google.api.http) = {
-      get: "/umgmt/v1alpha1/user/{user_name}"
+      get: "/umgmt/v1alpha1/user/{name}"
     };
   }
 
   rpc UpdateUser(UpdateUserRequest) returns (UpdateUserResponse) {
     option (google.api.http) = {
-      post: "/umgmt/v1alpha1/user/{user_name}"
+      post: "/umgmt/v1alpha1/user/{name}"
       body: "*"
     };
   }
 
-  rpc GetInventory(GetInventoryRequest) returns (GetInventoryResponse) {
+  rpc DeleteUser(DeleteUserRequest) returns (DeleteUserResponse) {
+    option (google.api.http) = {
+      delete: "/umgmt/v1alpha1/user/{name}"
+    };
+  }
+
+  rpc ListInventory(ListInventoryRequest) returns (ListInventoryResponse) {
     option (google.api.http) = {
       get: "/umgmt/v1alpha1/inventory"
     };
   }
 
-  rpc GetMachineInfo(GetMachineInfoRequest) returns (GetMachineInfoResponse) {
+  rpc GetChassisInfo(GetChassisInfoRequest) returns (GetChassisInfoResponse) {
     option (google.api.http) = {
-      get: "/umgmt/v1alpha1/machine/{id}"
+      get: "/umgmt/v1alpha1/chassis/{id}"
     };
   }
 
-  rpc GetMachineState(GetMachineStateRequest) returns (GetMachineStateResponse) {
+  rpc ChangeSystemState(ChangeSystemStateRequest) returns (ChangeSystemStateResponse) {
     option (google.api.http) = {
-      get: "/umgmt/v1alpha1/machine/{id}/state"
-    };
-  }
-
-  rpc ChangeMachineState(ChangeMachineStateRequest) returns (ChangeMachineStateResponse) {
-    option (google.api.http) = {
-      post: "/umgmt/v1alpha1/machine/{id}/state"
+      post: "/umgmt/v1alpha1/chassis/{id}/state"
       body: "*"
     };
   }
 
-  rpc GetSensorList(GetSensorListRequest) returns (GetSensorListResponse) {
-    option (google.api.http) = {
-      get: "/umgmt/v1alpha1/sensors"
-    };
-  }
-
-  rpc GetSensorData(GetSensorDataRequest) returns (GetSensorDataResponse) {
-    option (google.api.http) = {
-      get: "/umgmt/v1alpha1/sensors/{id}"
-    };
-  }
-
-  rpc StreamHostConsole(stream StreamHostConsoleRequest) returns (stream StreamHostConsoleResponse) {
-    option (google.api.http) = {
-      post: "/umgmt/v1alpha1/machine/{id}/console"
-      body: "*"
-    };
-  }
-
-  rpc ConfigureThermalSetPoints(ConfigureThermalSetPointsRequest) returns (ConfigureThermalSetPointsResponse) {
-    option (google.api.http) = {
-      post: "/umgmt/v1alpha1/machine/{id}/thermal/setpoints"
-      body: "*"
-    };
-  }
-
-  rpc ConfigureThermalFanProfiles(ConfigureThermalFanProfilesRequest) returns (ConfigureThermalFanProfilesResponse) {
-    option (google.api.http) = {
-      post: "/umgmt/v1alpha1/machine/{id}/thermal/fanprofiles"
-      body: "*"
-    };
-  }
-}
-
-enum Status {
-  STATUS_UNSPECIFIED = 0;
-  STATUS_SUCCESS = 1;
-  STATUS_FAILURE = 2;
-}
-
-enum Role {
-  ROLE_UNSPECIFIED = 0;
-  ROLE_DEUBG = 1;
-  ROLE_ADMIN = 2;
-  ROLE_USER = 3;
-}
-
-message User {
-  string name = 1 [(buf.validate.field).string.min_len = 1];
-  string password = 2 [(buf.validate.field).string.min_len = 1];
-  string description = 3 [(buf.validate.field).string.min_len = 1];
-  Role role = 4 [(buf.validate.field).enum.defined_only = true];
-}
-
-message GetUsersRequest {}
-
-message GetUsersResponse {
-  repeated User users = 1;
-  Status status = 2 [(buf.validate.field).enum.defined_only = true];
-}
-
-message GetUserInfoRequest {
-  string user_name = 1 [(buf.validate.field).string.min_len = 1];
-}
-
-message GetUserInfoResponse {
-  User user = 1;
-  Status status = 2 [(buf.validate.field).enum.defined_only = true];
-}
-
-message UpdateUserRequest {
-  string user_name = 1 [(buf.validate.field).string.min_len = 1];
-  User user = 2;
-}
-
-message UpdateUserResponse {
-  Status status = 1 [(buf.validate.field).enum.defined_only = true];
-}
-
-message Location {
-  string building = 1 [(buf.validate.field).string.min_len = 1];
-  string room = 2 [(buf.validate.field).string.min_len = 1];
-  string rack = 3 [(buf.validate.field).string.min_len = 1];
-  string slot = 4 [(buf.validate.field).string.min_len = 1];
-}
-
-message Machine {
-  string id = 1 [(buf.validate.field).string.uuid = true];
-  string hostname = 2 [(buf.validate.field).string.min_len = 1];
-  string ip_address = 3 [(buf.validate.field).string.min_len = 1];
-  string serial_number = 4 [(buf.validate.field).string.min_len = 1];
-  string product_name = 5 [(buf.validate.field).string.min_len = 1];
-  string manufacturer = 6 [(buf.validate.field).string.min_len = 1];
-  string asset_tag = 7 [(buf.validate.field).string.min_len = 1];
-  Location location = 8;
-}
-
-message Component {
-  string id = 1 [(buf.validate.field).string.uuid = true];
-  string serial_number = 2 [(buf.validate.field).string.min_len = 1];
-  string product_name = 3 [(buf.validate.field).string.min_len = 1];
-  string manufacturer = 4 [(buf.validate.field).string.min_len = 1];
-  string asset_tag = 5 [(buf.validate.field).string.min_len = 1];
-}
-
-message Inventory {
-  repeated Machine machines = 1;
-  repeated Component components = 2;
-}
-
-message GetInventoryRequest {}
-
-message GetInventoryResponse {
-  Inventory inventory = 1;
-  Status status = 2 [(buf.validate.field).enum.defined_only = true];
-}
-
-message GetMachineInfoRequest {
-  string id = 1 [(buf.validate.field).string.uuid = true];
-}
-
-message GetMachineInfoResponse {
-  Machine machine = 1;
-  Status status = 2 [(buf.validate.field).enum.defined_only = true];
-}
-
-enum State {
-  STATE_UNSPECIFIED = 0;
-  STATE_ON = 1;
-  STATE_OFF = 2;
-  STATE_SUSPENDED = 3;
-  STATE_HIBERNATED = 4;
-  STATE_UNKNOWN = 5;
-}
-
-message GetMachineStateRequest {
-  string id = 1 [(buf.validate.field).string.uuid = true];
-}
-
-message GetMachineStateResponse {
-  State state = 1 [(buf.validate.field).enum.defined_only = true];
-  Status status = 2 [(buf.validate.field).enum.defined_only = true];
-}
-
-message ChangeMachineStateRequest {
-  string id = 1 [(buf.validate.field).string.uuid = true];
-  State state = 2 [(buf.validate.field).enum.defined_only = true];
-}
-
-message ChangeMachineStateResponse {
-  Status status = 1 [(buf.validate.field).enum.defined_only = true];
-}
-
-message Sensor {
-  string id = 1 [(buf.validate.field).string.uuid = true];
-  string name = 2 [(buf.validate.field).string.min_len = 1];
-  string type = 3 [(buf.validate.field).string.min_len = 1];
-  string units = 4 [(buf.validate.field).string.min_len = 1];
-  string value = 5 [(buf.validate.field).string.min_len = 1];
-  google.protobuf.Timestamp updated_at = 6;
-}
-
-message GetSensorListRequest {}
-
-message GetSensorListResponse {
-  repeated Sensor sensors = 1;
-  Status status = 2 [(buf.validate.field).enum.defined_only = true];
-}
-
-message GetSensorDataRequest {
-  string id = 1 [(buf.validate.field).string.uuid = true];
-}
-
-message GetSensorDataResponse {
-  Sensor sensor = 1;
-  Status status = 2 [(buf.validate.field).enum.defined_only = true];
-}
-
-message StreamHostConsoleRequest {
-  string id = 1 [(buf.validate.field).string.uuid = true];
-  bytes data = 2;
-  Status status = 3 [(buf.validate.field).enum.defined_only = true];
-}
-
-message StreamHostConsoleResponse {
-  bytes data = 1;
-  Status status = 2 [(buf.validate.field).enum.defined_only = true];
-}
-
-message ConfigureThermalSetPointsRequest {
-  string id = 1 [(buf.validate.field).string.uuid = true];
-  int32 cpu_setpoint = 2;
-}
-
-message ConfigureThermalSetPointsResponse {
-  Status status = 1 [(buf.validate.field).enum.defined_only = true];
-}
-
-enum FanProfile {
-  FAN_PROFILE_UNSPECIFIED = 0;
-  FAN_PROFILE_SILENT = 1;
-  FAN_PROFILE_BALANCED = 2;
-  FAN_PROFILE_PERFORMANCE = 3;
-  FAN_PROFILE_FULL_SPEED = 4;
-}
-
-message ConfigureThermalFanProfilesRequest {
-  string id = 1 [(buf.validate.field).string.uuid = true];
-  FanProfile fan_profile = 2 [(buf.validate.field).enum.defined_only = true];
-}
-
-message ConfigureThermalFanProfilesResponse {
-  Status status = 1 [(buf.validate.field).enum.defined_only = true];
+  rpc StreamConsole(stream StreamConsoleRequest) returns (stream StreamConsoleResponse) {}
 }

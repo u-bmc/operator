@@ -1,0 +1,71 @@
+syntax = "proto3";
+
+package umgmt.v1alpha1;
+
+option go_package = "umgmt";
+
+import "google/protobuf/field_mask.proto";
+
+enum Role {
+  ROLE_UNSPECIFIED = 0;
+  ROLE_DEBUG = 1;
+  ROLE_ADMIN = 2;
+  ROLE_USER = 3;
+}
+
+message User {
+  string name = 1;
+  string description = 2;
+  Authentication authentication = 3;
+  Role role = 4;
+  uint32 permissions = 5;
+  bool active = 6;
+}
+
+enum AuthenticationMethod {
+  AUTHENTICATION_METHOD_UNSPECIFIED = 0;
+  AUTHENTICATION_METHOD_PASSWORD = 1;
+  AUTHENTICATION_METHOD_TOKEN = 2;
+}
+
+message Authentication {
+  AuthenticationMethod method = 1;
+  bytes data = 2;
+}
+
+message ListUsersRequest {
+  google.protobuf.FieldMask field_mask = 1;
+}
+
+message ListUsersResponse {
+  repeated User users = 1;
+}
+
+message GetUserInfoRequest {
+  string name = 1;
+  google.protobuf.FieldMask field_mask = 2;
+}
+
+message GetUserInfoResponse {
+  User user = 1;
+}
+
+message CreateUserRequest {
+  User user = 1;
+}
+
+message CreateUserResponse {}
+
+message UpdateUserRequest {
+  string name = 1;
+  User user = 2;
+  google.protobuf.FieldMask field_mask = 3;
+}
+
+message UpdateUserResponse {}
+
+message DeleteUserRequest {
+  string name = 1;
+}
+
+message DeleteUserResponse {}
