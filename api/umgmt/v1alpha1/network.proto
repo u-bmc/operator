@@ -1,0 +1,103 @@
+syntax = "proto3";
+
+package umgmt.v1alpha1;
+
+option go_package = "umgmt";
+
+import "google/protobuf/field_mask.proto";
+
+enum AddressType {
+  ADDRESS_TYPE_UNSPECIFIED = 0;
+  ADDRESS_TYPE_IPV4 = 1;
+  ADDRESS_TYPE_IPV6 = 2;
+}
+
+enum AddressOrigin {
+  ADDRESS_ORIGIN_UNSPECIFIED = 0;
+  ADDRESS_ORIGIN_STATIC = 1;
+  ADDRESS_ORIGIN_DHCP = 2;
+}
+
+message Address {
+  AddressType type = 1;
+  string address = 2;
+  string netmask = 3;
+  AddressOrigin origin = 4;
+  string gateway = 5;
+}
+
+enum InterfaceType {
+  INTERFACE_TYPE_UNSPECIFIED = 0;
+  INTERFACE_TYPE_ETHERNET = 1;
+  INTERFACE_TYPE_WIFI = 2;
+  INTERFACE_TYPE_CELLULAR = 3;
+}
+
+enum Duplexing {
+  DUPLEXING_UNSPECIFIED = 0;
+  DUPLEXING_SIMPLEX = 1;
+  DUPLEXING_DUAL_SIMPLEX = 2;
+  DUPLEXING_HALF_DUPLEX = 3;
+  DUPLEXING_FULL_DUPLEX = 4;
+}
+
+message Vlan {
+  bool enabled = 1;
+  uint32 id = 2;
+}
+
+message Interface {
+  string name = 1;
+  InterfaceType type = 2;
+  string mac_address = 3;
+  repeated Address addresses = 4;
+  Vlan vlan = 5;
+  uint32 mtu = 6;
+  uint32 speed_mbps = 7;
+  Duplexing duplexing = 8;
+  bool active = 9;
+}
+
+enum DnsType {
+  DNS_TYPE_UNSPECIFIED = 0;
+  DNS_TYPE_CLASSIC = 1;
+  DNS_TYPE_DOT = 2;
+  DNS_TYPE_DOH = 3;
+  DNS_TYPE_DOQ = 4;
+}
+
+message DnsServer {
+  string fqdn = 1;
+  repeated Address address = 2;
+  DnsType type = 3;
+  bool dnssec = 4;
+}
+
+enum TimeType {
+  TIME_TYPE_UNSPECIFIED = 0;
+  TIME_TYPE_NTP = 1;
+  TIME_TYPE_NTS = 2;
+  TIME_TYPE_PTP = 3;
+  TIME_TYPE_ROUGHTIME = 4;
+}
+
+message TimeServer {
+  string fqdn = 1;
+  repeated Address address = 2;
+  TimeType type = 3;
+}
+
+message Network {
+  string hostname = 1;
+  repeated Interface interfaces = 2;
+  repeated DnsServer dns_servers = 3;
+  repeated TimeServer time_servers = 4;
+}
+
+message GetNetworkInfoRequest {
+  google.protobuf.FieldMask field_mask = 1;
+}
+
+message GetNetworkInfoResponse {
+  repeated Network network = 1;
+}
