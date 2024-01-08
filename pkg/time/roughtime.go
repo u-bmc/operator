@@ -6,7 +6,7 @@ import (
 	"encoding/base64"
 	"time"
 
-	"github.com/cloudflare/roughtime"
+	"github.com/cloudflare/roughtime/client"
 	"github.com/cloudflare/roughtime/config"
 )
 
@@ -49,7 +49,7 @@ func GetTimeFromRoughtime(servers []RoughtimeServer) (time.Time, error) {
 		}
 
 		// Query the current server for the time.
-		res, err := roughtime.Get(srv, 3, 5*time.Second, nil)
+		res, err := client.Get(srv, 3, 5*time.Second, nil)
 		// If there's an error, skip to the next server.
 		if err != nil {
 			continue
