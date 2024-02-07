@@ -1,8 +1,6 @@
 module github.com/u-bmc/operator
 
-go 1.21.1
-
-toolchain go1.21.5
+go 1.22.0
 
 require (
 	cirello.io/oversight v1.2.1
