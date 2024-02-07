@@ -22,7 +22,7 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
-          go-version: "1.21"
+          go-version: "1.22"
           check-latest: true
       - name: Run Test-Pipeline
         uses: dagger/dagger-for-github@v5
@@ -40,7 +40,7 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
-          go-version: "1.21"
+          go-version: "1.22"
           check-latest: true
       - name: Run Race-Condition-Pipeline
         uses: dagger/dagger-for-github@v5
@@ -58,7 +58,7 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
-          go-version: "1.21"
+          go-version: "1.22"
           check-latest: true
       - name: Run Coverage-Pipeline
         uses: dagger/dagger-for-github@v5
@@ -67,6 +67,6 @@ jobs:
           args: go run ci/main.go -cmd "go test -shuffle=on -cover -covermode=atomic -coverpkg=./... -coverprofile=output/coverage.txt ./..."
           version: "0.9.3"
       - name: Upload report to Codecov
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@v4
         with:
           files: output/coverage.txt
