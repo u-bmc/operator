@@ -30,14 +30,14 @@ require (
 	github.com/warthog618/gpiod v0.8.2
 	go.bug.st/serial v1.6.1
 	go.etcd.io/bbolt v1.3.8
-	go.opentelemetry.io/otel v1.23.0
+	go.opentelemetry.io/otel v1.23.1
 	go.opentelemetry.io/otel/exporters/otlp/otlpmetric/otlpmetricgrpc v1.23.0
-	go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc v1.23.0
-	go.opentelemetry.io/otel/exporters/stdout/stdoutmetric v1.23.0
+	go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc v1.23.1
+	go.opentelemetry.io/otel/exporters/stdout/stdoutmetric v1.23.1
 	go.opentelemetry.io/otel/exporters/stdout/stdouttrace v1.23.0
-	go.opentelemetry.io/otel/sdk v1.23.0
-	go.opentelemetry.io/otel/sdk/metric v1.23.0
-	go.opentelemetry.io/otel/trace v1.23.0
+	go.opentelemetry.io/otel/sdk v1.23.1
+	go.opentelemetry.io/otel/sdk/metric v1.23.1
+	go.opentelemetry.io/otel/trace v1.23.1
 	golang.org/x/crypto v0.19.0
 	golang.org/x/sys v0.17.0
 	google.golang.org/genproto v0.0.0-20240205150955-31a09d347014
@@ -78,8 +78,8 @@ require (
 	github.com/u-root/uio v0.0.0-20240118234441-a3c409a6018e // indirect
 	github.com/vektah/gqlparser/v2 v2.5.11 // indirect
 	github.com/vishvananda/netns v0.0.4 // indirect
-	go.opentelemetry.io/otel/exporters/otlp/otlptrace v1.23.0 // indirect
-	go.opentelemetry.io/otel/metric v1.23.0 // indirect
+	go.opentelemetry.io/otel/exporters/otlp/otlptrace v1.23.1 // indirect
+	go.opentelemetry.io/otel/metric v1.23.1 // indirect
 	go.opentelemetry.io/proto/otlp v1.1.0 // indirect
 	go.uber.org/mock v0.4.0 // indirect
 	golang.org/x/exp v0.0.0-20240205201215-2c58cdc269a3 // indirect
