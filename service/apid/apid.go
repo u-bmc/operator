@@ -62,7 +62,7 @@ func (s *Service) Name() string {
 	return s.c.name
 }
 
-func (s *Service) Run(ctx context.Context) error {
+func (s *Service) Run(ctx context.Context) error { //nolint:funlen
 	s.c.log.Info("Starting service", "service", s.c.name, "uuid", s.c.id.String())
 
 	s.c.log.Info("Connecting to ipcd", "service", s.c.name, "uuid", s.c.id.String(), "addr", s.c.ipcAddr)
@@ -83,6 +83,7 @@ func (s *Service) Run(ctx context.Context) error {
 	}
 
 	s.c.log.Info("Creating u-mgmt server", "service", s.c.name, "uuid", s.c.id.String())
+	oi, _ := otelconnect.NewInterceptor() //nolint:errcheck
 	rpcRoute, rpcHandler := umgmtv1alpha1connect.NewUmgmtServiceHandler(
 		&umgmtServiceServer{
 			c:  s.c,
@@ -90,7 +91,7 @@ func (s *Service) Run(ctx context.Context) error {
 		},
 		compress.WithAll(compress.LevelFastest),
 		connect.WithInterceptors(
-			otelconnect.NewInterceptor(),
+			oi,
 		),
 	)
 
