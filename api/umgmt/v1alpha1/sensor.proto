@@ -4,7 +4,6 @@ package umgmt.v1alpha1;
 
 option go_package = "umgmt";
 
-import "google/protobuf/field_mask.proto";
 import "google/protobuf/timestamp.proto";
 
 enum SensorType {

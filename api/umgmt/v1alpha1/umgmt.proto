@@ -7,7 +7,6 @@ option go_package = "umgmt";
 import "google/api/annotations.proto";
 import "umgmt/v1alpha1/console.proto";
 import "umgmt/v1alpha1/inventory.proto";
-import "umgmt/v1alpha1/sensor.proto";
 import "umgmt/v1alpha1/user.proto";
 
 service UmgmtService {
