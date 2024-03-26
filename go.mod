@@ -9,7 +9,7 @@ require (
 	connectrpc.com/grpcreflect v1.2.0
 	connectrpc.com/otelconnect v0.7.0
 	connectrpc.com/vanguard v0.1.0
-	dagger.io/dagger v0.9.8
+	dagger.io/dagger v0.10.3
 	github.com/beevik/ntp v1.3.1
 	github.com/beevik/nts v0.1.0
 	github.com/bufbuild/protovalidate-go v0.5.1
