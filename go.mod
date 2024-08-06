@@ -22,7 +22,7 @@ require (
 	github.com/klauspost/connect-compress/v2 v2.0.0
 	github.com/nats-io/nats-server/v2 v2.10.10
 	github.com/nats-io/nats.go v1.32.0
-	github.com/quic-go/quic-go v0.41.0
+	github.com/quic-go/quic-go v0.42.0
 	github.com/rs/cors v1.10.1
 	github.com/rs/zerolog v1.32.0
 	github.com/unrolled/secure v1.14.0
