@@ -20,7 +20,7 @@ require (
 	github.com/google/uuid v1.6.0
 	github.com/insomniacslk/dhcp v0.0.0-20240204152450-ca2dc33955c1
 	github.com/klauspost/connect-compress/v2 v2.0.0
-	github.com/nats-io/nats-server/v2 v2.10.10
+	github.com/nats-io/nats-server/v2 v2.10.27
 	github.com/nats-io/nats.go v1.32.0
 	github.com/quic-go/quic-go v0.41.0
 	github.com/rs/cors v1.10.1
